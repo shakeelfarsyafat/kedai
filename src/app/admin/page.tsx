@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { orderStore } from '@/lib/orderStore';
 import { authService, AdminUser } from '@/lib/auth';
-import { Order, OrderStatus, OrderNotification } from '@/types/coffee';
+import { Order, OrderNotification } from '@/types/coffee';
 import { MENU_ITEMS } from '@/lib/mockData';
 import { AudioAlertManager } from '@/components/admin/AudioAlertManager';
 import { OrdersView } from '@/components/admin/OrdersView';

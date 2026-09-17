@@ -1,5 +1,5 @@
-import AdminDashboardPage from '../admin/page';
+import { redirect } from 'next/navigation';
 
 export default function BaristaPage() {
-  return <AdminDashboardPage />;
+  redirect('/admin');
 }

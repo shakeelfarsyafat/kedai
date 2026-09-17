@@ -10,7 +10,6 @@ import {
   TrendingUp,
   Award,
   Coffee,
-  Calendar,
   Layers,
   ArrowUpRight,
 } from 'lucide-react';
