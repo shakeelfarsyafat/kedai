@@ -3,7 +3,8 @@
 import React, { useState } from 'react';
 import { Order } from '@/types/coffee';
 import { formatRupiah, formatDateTime } from '@/lib/utils';
-import { Search, UtensilsCrossed, ShoppingBag, Eye, X } from 'lucide-react';
+import { Search, UtensilsCrossed, ShoppingBag, Eye, X, Printer } from 'lucide-react';
+import { ReceiptModal } from './ReceiptModal';
 
 interface OrderHistoryTableProps {
   orders: Order[];
@@ -12,6 +13,7 @@ interface OrderHistoryTableProps {
 export const OrderHistoryTable: React.FC<OrderHistoryTableProps> = ({ orders }) => {
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [receiptOrder, setReceiptOrder] = useState<Order | null>(null);
 
   const filtered = orders.filter(
     (o) =>
@@ -176,8 +178,32 @@ export const OrderHistoryTable: React.FC<OrderHistoryTableProps> = ({ orders }) 
                 <span className="text-cyan-400 font-black">{formatRupiah(selectedOrder.total)}</span>
               </div>
             </div>
+
+            {/* Print Struk Button */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const ord = selectedOrder;
+                  setSelectedOrder(null);
+                  setReceiptOrder(ord);
+                }}
+                className="w-full py-2 px-4 rounded-xl bg-[#007b9e] hover:bg-[#006e8d] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg shadow-cyan-950/50 transition-all"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Cetak Struk Transaksi Ini</span>
+              </button>
+            </div>
           </div>
         </div>
+      )}
+
+      {/* Printable Receipt Modal */}
+      {receiptOrder && (
+        <ReceiptModal
+          order={receiptOrder}
+          onClose={() => setReceiptOrder(null)}
+        />
       )}
     </div>
   );

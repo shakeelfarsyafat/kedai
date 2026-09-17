@@ -37,22 +37,24 @@ export const AudioAlertManager: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-2.5">
+    <div className="flex items-center gap-1.5 sm:gap-2">
       {/* Audio Enable Autoplay Banner if uninitialized */}
       {audioState !== 'running' && !hasInteracted ? (
         <button
           onClick={handleEnableAudio}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#007b9e] hover:bg-[#006e8d] text-white font-bold text-xs shadow-lg shadow-cyan-950/40 transition-all animate-bounce"
+          className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-[#007b9e] hover:bg-[#006e8d] text-white font-bold text-xs shadow-lg shadow-cyan-950/40 transition-all shrink-0"
+          title="Aktifkan Audio Notifikasi Pesanan"
         >
-          <BellRing className="w-4 h-4 animate-pulse" />
-          <span>Aktifkan Audio Notifikasi</span>
+          <BellRing className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-200" />
+          <span className="hidden sm:inline">Aktifkan Audio Notifikasi</span>
+          <span className="sm:hidden text-[11px]">Audio Alert</span>
         </button>
       ) : (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           {/* Mute/Unmute Toggle */}
           <button
             onClick={toggleMute}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
               !isMuted
                 ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
                 : 'bg-[#080e12] border-[#1c3340] text-slate-400'
@@ -62,12 +64,12 @@ export const AudioAlertManager: React.FC = () => {
             {!isMuted ? (
               <>
                 <Volume2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Audio Aktif</span>
+                <span className="hidden sm:inline text-xs">Audio Aktif</span>
               </>
             ) : (
               <>
                 <VolumeX className="w-3.5 h-3.5 text-slate-500" />
-                <span>Audio Mute</span>
+                <span className="hidden sm:inline text-xs">Mute</span>
               </>
             )}
           </button>
@@ -75,9 +77,9 @@ export const AudioAlertManager: React.FC = () => {
           {/* Test Sound Button */}
           <button
             onClick={handleTestSound}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#080e12] hover:bg-[#14232b] border border-[#1c3340] text-[11px] font-medium text-slate-300 hover:text-white transition-colors"
+            className="hidden lg:flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#080e12] hover:bg-[#14232b] border border-[#1c3340] text-[11px] font-medium text-slate-300 hover:text-white transition-colors"
           >
-            <span>Tes Bel Ding</span>
+            <span>Tes Bell</span>
           </button>
         </div>
       )}

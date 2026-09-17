@@ -8,7 +8,7 @@ import { authService, AdminUser } from '@/lib/auth';
 import { Order, OrderStatus, OrderNotification } from '@/types/coffee';
 import { MENU_ITEMS } from '@/lib/mockData';
 import { AudioAlertManager } from '@/components/admin/AudioAlertManager';
-import { KanbanBoard } from '@/components/admin/KanbanBoard';
+import { OrdersView } from '@/components/admin/OrdersView';
 import { AnalyticsView } from '@/components/admin/AnalyticsView';
 import { OrderHistoryTable } from '@/components/admin/OrderHistoryTable';
 import { MenuManager } from '@/components/admin/MenuManager';
@@ -27,6 +27,7 @@ import {
   UtensilsCrossed,
   LogOut,
   UserCheck,
+  Receipt,
 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
@@ -34,7 +35,7 @@ export default function AdminDashboardPage() {
   const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [activeTab, setActiveTab] = useState<'kanban' | 'menu' | 'analytics' | 'history'>('kanban');
+  const [activeTab, setActiveTab] = useState<'orders' | 'menu' | 'analytics' | 'history'>('orders');
   const [toastNotification, setToastNotification] = useState<OrderNotification | null>(null);
   const [currentTime, setCurrentTime] = useState<string>('');
 
@@ -84,8 +85,8 @@ export default function AdminDashboardPage() {
     };
   }, [isAuthChecked]);
 
-  const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
-    orderStore.updateOrderStatus(orderId, newStatus);
+  const handleUpdatePaymentStatus = (orderId: string, status: 'paid' | 'pending') => {
+    orderStore.updatePaymentStatus(orderId, status);
   };
 
   const handleLogout = () => {
@@ -147,44 +148,58 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const activeOrdersCount = orders.filter((o) => o.status === 'new' || o.status === 'brewing').length;
-  const newOrdersCount = orders.filter((o) => o.status === 'new').length;
+  const unpaidCount = orders.filter((o) => o.paymentStatus === 'pending').length;
 
   return (
     <div className="min-h-screen bg-[#070e12] text-slate-100 flex flex-col selection:bg-[#007b9e] selection:text-white">
-      {/* Top Bar Barista Station */}
+      {/* Top Bar Barista Station - Fully Responsive on Mobile & Desktop */}
       <header className="sticky top-0 z-30 bg-[#0a141a]/95 backdrop-blur-md border-b border-[#17303d]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2.5 sm:py-3 gap-2.5 sm:gap-4 min-h-[4.5rem]">
             {/* Title & Brand */}
-            <div className="flex items-center space-x-3">
-              <div className="w-11 h-11 rounded-2xl bg-white flex items-center justify-center shadow-lg shadow-cyan-950/60 border border-cyan-500/30 p-1">
-                <img src="/images/icon-brew-bean.png" alt="Brew Bean Mascot" className="w-8 h-8 object-contain" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl font-extrabold tracking-wider text-white uppercase">
-                    BREW BEAN
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold bg-[#007b9e]/20 text-cyan-300 border border-[#007b9e]/40">
-                    Barista Station
-                  </span>
-                  {newOrdersCount > 0 && (
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-red-500 text-white animate-pulse">
-                      {newOrdersCount} Baru!
+            <div className="flex items-center justify-between sm:justify-start gap-3 w-full sm:w-auto">
+              <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-white flex items-center justify-center shadow-lg shadow-cyan-950/60 border border-cyan-500/30 p-1 shrink-0">
+                  <img src="/images/icon-brew-bean.png" alt="Brew Bean Mascot" className="w-7 h-7 sm:w-8 sm:h-8 object-contain" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-base sm:text-xl font-black tracking-wider text-white uppercase whitespace-nowrap">
+                      BREW BEAN
                     </span>
-                  )}
+                    <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] uppercase font-bold bg-[#007b9e]/20 text-cyan-300 border border-[#007b9e]/40 whitespace-nowrap">
+                      Barista Station
+                    </span>
+                    {unpaidCount > 0 && (
+                      <span className="px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black bg-amber-500 text-black animate-pulse whitespace-nowrap">
+                        {unpaidCount} Belum Bayar
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-[11px] sm:text-xs text-slate-400 font-mono mt-0.5">
+                    <span>{currentTime || '00:00:00'}</span>
+                    <span>•</span>
+                    <span className="text-cyan-400 font-semibold">{orders.length} Total Pesanan</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-3 text-xs text-slate-400 font-mono mt-0.5">
-                  <span>Waktu: {currentTime || '00:00:00'}</span>
-                  <span>•</span>
-                  <span className="text-cyan-400 font-semibold">{activeOrdersCount} Pesanan Aktif</span>
-                </div>
+              </div>
+
+              {/* Mobile quick actions (Logout & Portal) */}
+              <div className="flex sm:hidden items-center gap-1.5">
+                <AudioAlertManager />
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="p-1.5 rounded-xl bg-[#0d171d] hover:bg-red-950/70 text-slate-400 hover:text-red-300 border border-[#1c3340] transition-all"
+                  title="Keluar"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
               </div>
             </div>
 
-            {/* Middle/Right Controls: Audio Toggle, User Info, Portal Link, Logout */}
-            <div className="flex items-center gap-2 sm:gap-3">
+            {/* Desktop Controls: Audio Toggle, User Info, Portal Link, Logout */}
+            <div className="hidden sm:flex items-center gap-2 sm:gap-3 shrink-0">
               <AudioAlertManager />
 
               {/* User Identity Chip */}
@@ -200,10 +215,10 @@ export default function AdminDashboardPage() {
 
               <Link
                 href="/"
-                className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#0d171d] hover:bg-[#152733] text-slate-300 hover:text-white text-xs font-semibold border border-[#1c3340] transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-[#0d171d] hover:bg-[#152733] text-slate-300 hover:text-white text-xs font-semibold border border-[#1c3340] transition-all"
               >
                 <Store className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Portal Pelanggan</span>
+                <span className="hidden md:inline">Portal Pelanggan</span>
               </Link>
 
               {/* Logout Button */}
@@ -218,28 +233,28 @@ export default function AdminDashboardPage() {
             </div>
           </div>
 
-          {/* Navigation Tabs */}
-          <div className="flex items-center gap-2 pb-3 overflow-x-auto">
+          {/* Navigation Tabs with Smooth Horizontal Scroll on Mobile */}
+          <div className="flex items-center gap-2 pb-2.5 overflow-x-auto no-scrollbar scroll-smooth">
             <button
-              onClick={() => setActiveTab('kanban')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                activeTab === 'kanban'
+              onClick={() => setActiveTab('orders')}
+              className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
+                activeTab === 'orders'
                   ? 'bg-[#007b9e] text-white shadow-lg shadow-cyan-950/50'
                   : 'text-slate-400 hover:text-white hover:bg-[#0d171d]'
               }`}
             >
-              <LayoutDashboard className="w-4 h-4" />
-              <span>Live Orders Kanban</span>
-              {newOrdersCount > 0 && (
-                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-red-500 text-white font-extrabold">
-                  {newOrdersCount}
+              <Receipt className="w-4 h-4" />
+              <span>Daftar Pesanan</span>
+              {unpaidCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-500 text-black font-extrabold">
+                  {unpaidCount}
                 </span>
               )}
             </button>
 
             <button
               onClick={() => setActiveTab('menu')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                 activeTab === 'menu'
                   ? 'bg-[#007b9e] text-white shadow-lg shadow-cyan-950/50'
                   : 'text-slate-400 hover:text-white hover:bg-[#0d171d]'
@@ -251,7 +266,7 @@ export default function AdminDashboardPage() {
 
             <button
               onClick={() => setActiveTab('analytics')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                 activeTab === 'analytics'
                   ? 'bg-[#007b9e] text-white shadow-lg shadow-cyan-950/50'
                   : 'text-slate-400 hover:text-white hover:bg-[#0d171d]'
@@ -263,7 +278,7 @@ export default function AdminDashboardPage() {
 
             <button
               onClick={() => setActiveTab('history')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
                 activeTab === 'history'
                   ? 'bg-[#007b9e] text-white shadow-lg shadow-cyan-950/50'
                   : 'text-slate-400 hover:text-white hover:bg-[#0d171d]'
@@ -277,12 +292,13 @@ export default function AdminDashboardPage() {
       </header>
 
       {/* Main Content Area */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full">
-        {activeTab === 'kanban' && (
-          <KanbanBoard
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 flex-1 w-full">
+        {activeTab === 'orders' && (
+          <OrdersView
             orders={orders}
-            onStatusChange={handleStatusChange}
+            onUpdatePaymentStatus={handleUpdatePaymentStatus}
             onSimulateTestOrder={handleSimulateNewOrder}
+            baristaName={currentUser?.name || 'Barista Shift A'}
           />
         )}
 

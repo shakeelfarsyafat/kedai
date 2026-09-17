@@ -82,6 +82,13 @@ class OrderStore {
           this.saveLocalOnly();
           this.notifyListeners();
           soundEngine.playStatusChangeChime();
+        } else if (data.type === 'PAYMENT_CHANGE') {
+          const { orderId, paymentStatus } = data;
+          this.orders = this.orders.map((o) =>
+            o.id === orderId ? { ...o, paymentStatus, updatedAt: new Date().toISOString() } : o
+          );
+          this.saveLocalOnly();
+          this.notifyListeners();
         } else if (data.type === 'RESET_ORDERS') {
           this.orders = [...INITIAL_ORDERS];
           this.saveLocalOnly();
@@ -218,6 +225,41 @@ class OrderStore {
     }
 
     soundEngine.playStatusChangeChime();
+    return true;
+  }
+
+  public updatePaymentStatus(orderId: string, paymentStatus: 'paid' | 'pending'): boolean {
+    if (!this.isInitialized && typeof window !== 'undefined') {
+      this.init();
+    }
+
+    const index = this.orders.findIndex((o) => o.id === orderId);
+    if (index === -1) return false;
+
+    this.orders[index] = {
+      ...this.orders[index],
+      paymentStatus,
+      updatedAt: new Date().toISOString(),
+    };
+
+    this.save();
+    this.notifyListeners();
+
+    // Async persist to DB
+    fetch(`/api/orders/${orderId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ paymentStatus }),
+    }).catch((err) => console.error('Failed to update payment status in DB:', err));
+
+    if (this.channel) {
+      this.channel.postMessage({
+        type: 'PAYMENT_CHANGE',
+        orderId,
+        paymentStatus,
+      });
+    }
+
     return true;
   }
 
