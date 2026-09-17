@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Order, OrderType, PaymentStatus } from '@/types/coffee';
 import { formatRupiah, formatTimeAgo } from '@/lib/utils';
 import { ReceiptModal } from './ReceiptModal';
+import { printThermalReceipt } from '@/lib/receiptPrinter';
 import {
   Search,
   Printer,
@@ -382,15 +383,24 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Print Receipt Button */}
-                  <div className="pt-1">
+                  {/* Print Receipt Button Options */}
+                  <div className="pt-1 flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => setSelectedOrderForPrint(order)}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-[#007b9e] hover:bg-[#006e8d] active:scale-98 text-white font-bold text-xs shadow-lg shadow-cyan-950/50 border border-cyan-400/30 transition-all"
+                      className="flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#007b9e] hover:bg-[#006e8d] active:scale-98 text-white font-bold text-xs shadow-lg shadow-cyan-950/50 border border-cyan-400/30 transition-all"
+                      title="Buka Preview Struk & Cetak"
                     >
                       <Printer className="w-4 h-4" />
                       <span>Print Struk</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => printThermalReceipt(order, baristaName)}
+                      className="p-2.5 rounded-xl bg-[#081014] hover:bg-cyan-950/70 text-cyan-300 hover:text-white border border-[#1c3340] hover:border-cyan-400/50 transition-all shrink-0"
+                      title="Cetak Langsung ke Printer Struk"
+                    >
+                      <Printer className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
