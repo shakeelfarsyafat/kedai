@@ -119,12 +119,12 @@ export default function AdminLoginPage() {
             ← Kembali
           </Link>
 
-          <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-[#007b9e] to-[#075f7e] flex items-center justify-center shadow-xl shadow-cyan-950/60 border border-cyan-400/30 mb-3">
-            <Coffee className="w-7 h-7 text-white stroke-[2.2]" />
+          <div className="w-16 h-16 mx-auto rounded-2xl bg-white flex items-center justify-center shadow-xl shadow-cyan-950/60 border border-cyan-400/30 mb-3 p-1.5">
+            <img src="/images/icon-brew-bean.png" alt="Brew Bean Mascot" className="w-12 h-12 object-contain" />
           </div>
 
           <h1 className="text-xl font-extrabold text-white tracking-wider uppercase">
-            LOKALE COMMAND POS
+            BREW BEAN COMMAND POS
           </h1>
           <p className="text-xs text-slate-400 mt-1">
             Autentikasi Barista Shift & Manajemen Kedai
@@ -267,7 +267,7 @@ export default function AdminLoginPage() {
                     disabled={lockoutRemaining > 0 || isLoading}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@lokale.coffee"
+                    placeholder="admin@brewbean.coffee"
                     className="w-full bg-[#080e12] border border-[#1c3340] rounded-xl pl-9 pr-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-[#007b9e] transition-all"
                   />
                 </div>

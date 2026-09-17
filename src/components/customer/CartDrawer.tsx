@@ -416,7 +416,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <path fill="#075f7e" d="M40,75 h15 v15 h-15 z M70,75 h20 v20 h-20 z M60,85 h5 v10 h-5 z" />
               </svg>
               <p className="text-[9px] text-[#075f7e] font-bold uppercase tracking-widest mt-1">
-                LOKALE COFFEE
+                BREW BEAN COFFEE
               </p>
             </div>
 

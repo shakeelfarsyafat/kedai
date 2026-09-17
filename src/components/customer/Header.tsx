@@ -37,23 +37,12 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Main Header Bar */}
         <div className="flex items-center justify-between h-16 sm:h-18 gap-2">
           {/* Brand Logo & Name */}
-          <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group shrink-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-br from-[#007b9e] to-[#075f7e] flex items-center justify-center shadow-md shadow-cyan-900/15 group-hover:scale-105 transition-transform">
-              <Coffee className="w-5 h-5 text-white stroke-[2.2]" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-base sm:text-lg font-extrabold tracking-tight text-[#075f7e] uppercase">
-                  lokale
-                </span>
-                <span className="text-[9px] uppercase font-bold px-2 py-0.5 rounded-full bg-cyan-50 text-[#007b9e] border border-cyan-200">
-                  Coffee
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-400 font-normal hidden sm:block">
-                Temukan Teman Harimu
-              </p>
-            </div>
+          <Link href="/" className="flex items-center space-x-2 group shrink-0" title="Brew Bean">
+            <img
+              src="/images/logo-brew-bean.png"
+              alt="Brew Bean"
+              className="h-8 sm:h-10 w-auto object-contain group-hover:scale-105 transition-transform"
+            />
           </Link>
 
           {/* Desktop Dine-in vs Takeaway & Table Picker (Centered & Elegant - matching Gambar 3) */}

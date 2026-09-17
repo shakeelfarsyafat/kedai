@@ -2,12 +2,17 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KROMA Coffee & Eatery | Specialty Coffee & Online Ordering",
-  description: "Pesan kopi artisanal, manual brew single origin, dan pastry lezat secara instan langsung dari meja Anda.",
+  title: "Brew Bean | Temukan Teman Harimu",
+  description: "Pesan aneka kopi nikmat, minuman segar, dan menu lezat favoritmu di Brew Bean secara praktis langsung dari smartphone Anda.",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/favicon.ico",
+    apple: "/icon.png",
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#120c08",
+  themeColor: "#007b9e",
   width: "device-width",
   initialScale: 1,
 };
@@ -18,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id" className="h-full antialiased dark">
-      <body className="min-h-full flex flex-col bg-[#120c08] text-[#f7f3ed] selection:bg-amber-600 selection:text-white">
+    <html lang="id" className="h-full antialiased">
+      <body className="min-h-full flex flex-col bg-[#f8fafc] text-slate-800 selection:bg-[#007b9e] selection:text-white">
         {children}
       </body>
     </html>

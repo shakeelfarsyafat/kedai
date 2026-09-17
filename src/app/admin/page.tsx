@@ -157,14 +157,14 @@ export default function AdminDashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Title & Brand */}
-            <div className="flex items-center space-x-3.5">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-[#007b9e] to-[#075f7e] flex items-center justify-center shadow-lg shadow-cyan-950/60 border border-cyan-500/30">
-                <Coffee className="w-6 h-6 text-white stroke-[2.2]" />
+            <div className="flex items-center space-x-3">
+              <div className="w-11 h-11 rounded-2xl bg-white flex items-center justify-center shadow-lg shadow-cyan-950/60 border border-cyan-500/30 p-1">
+                <img src="/images/icon-brew-bean.png" alt="Brew Bean Mascot" className="w-8 h-8 object-contain" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xl font-extrabold tracking-wider text-white uppercase">
-                    LOKALE
+                    BREW BEAN
                   </span>
                   <span className="px-2 py-0.5 rounded-full text-[10px] uppercase font-bold bg-[#007b9e]/20 text-cyan-300 border border-[#007b9e]/40">
                     Barista Station

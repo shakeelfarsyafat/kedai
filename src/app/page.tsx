@@ -234,7 +234,7 @@ export default function CustomerPortalPage() {
             <div className="relative shrink-0 flex items-center justify-center pointer-events-none -mt-8 sm:-mt-14 md:-mt-22">
               <img
                 src="/images/hero-floating-duo.png"
-                alt="Lokale Floating Coffee & Matcha Duo"
+                alt="Brew Bean Floating Coffee Duo"
                 className="w-36 sm:w-60 md:w-80 lg:w-96 h-auto object-contain drop-shadow-[0_16px_25px_rgba(0,0,0,0.28)] animate-hero-cup-1"
               />
             </div>
