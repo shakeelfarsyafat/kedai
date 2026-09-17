@@ -2,8 +2,8 @@
 import { MenuItem } from '@/types/coffee';
 import { MENU_ITEMS } from './mockData';
 
-const MENU_STORAGE_KEY = 'kroma_coffee_menu_items_v3';
-const MENU_CHANNEL_NAME = 'kroma_coffee_menu_sync_bus';
+const MENU_STORAGE_KEY = 'lokale_coffee_menu_items_v5';
+const MENU_CHANNEL_NAME = 'lokale_coffee_menu_sync_bus';
 
 type MenuListener = (items: MenuItem[]) => void;
 

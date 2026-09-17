@@ -211,8 +211,8 @@ export default function CustomerPortalPage() {
       />
 
       {/* Hero Welcome Banner with Floating Coffee Cups Overflowing Out of the Box */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-4 sm:pb-6 w-full">
-        <div className="relative rounded-3xl sm:rounded-[36px] bg-gradient-to-r from-[#086a87] via-[#0d85a8] via-50% to-[#50abc3] px-6 sm:px-12 lg:px-14 py-8 sm:py-12 lg:py-14 overflow-visible shadow-md shadow-cyan-950/10">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 sm:pt-10 pb-3 sm:pb-6 w-full">
+        <div className="relative rounded-3xl sm:rounded-[36px] bg-gradient-to-r from-[#086a87] via-[#0d85a8] via-50% to-[#50abc3] px-5 sm:px-12 lg:px-14 py-6 sm:py-12 lg:py-14 overflow-visible shadow-md shadow-cyan-950/10">
           {/* Subtle atmospheric cloud texture inside the banner */}
           <div className="absolute inset-0 rounded-3xl sm:rounded-[36px] overflow-hidden pointer-events-none opacity-40">
             <div className="absolute -top-12 -left-12 w-64 h-64 bg-white/20 rounded-full blur-3xl" />
@@ -220,52 +220,32 @@ export default function CustomerPortalPage() {
             <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-white/15 to-transparent" />
           </div>
 
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-10">
+          <div className="relative z-10 flex flex-row items-center justify-between gap-3 sm:gap-8">
             {/* Left Big Typography */}
-            <div className="max-w-xl text-center md:text-left">
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.12] tracking-tight drop-shadow-sm">
+            <div className="flex-1 max-w-xl text-left">
+              <h1 className="text-xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight sm:leading-[1.12] tracking-tight drop-shadow-sm">
                 Temukan
                 <br />
                 Teman Harimu.
               </h1>
             </div>
 
-            {/* Right: Floating Coffee Cups Pop Out Above The Box */}
-            <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[390px] h-48 sm:h-56 md:h-64 flex items-end justify-center pointer-events-none">
-              {/* Cup 1: Iced Latte (Poking out of the top boundary with float animation) */}
-              <div className="absolute left-2 sm:left-4 bottom-1 z-20 flex flex-col items-center">
-                <div className="relative -top-9 sm:-top-14 md:-top-18 animate-hero-cup-1">
-                  <img
-                    src="/images/hero-latte.png"
-                    alt="Floating Iced Latte"
-                    className="w-36 sm:w-46 md:w-52 h-auto object-contain drop-shadow-[0_20px_25px_rgba(0,0,0,0.32)]"
-                  />
-                  {/* Soft realistic floating shadow underneath */}
-                  <div className="w-24 sm:w-32 h-3.5 sm:h-4.5 bg-black/25 rounded-full blur-md mx-auto -mt-2 animate-shadow-1" />
-                </div>
-              </div>
-
-              {/* Cup 2: Iced Matcha Macchiato */}
-              <div className="absolute right-2 sm:right-4 bottom-2 z-10 flex flex-col items-center">
-                <div className="relative -top-2 sm:-top-5 md:-top-7 animate-hero-cup-2">
-                  <img
-                    src="/images/hero-matcha.png"
-                    alt="Floating Iced Matcha Macchiato"
-                    className="w-32 sm:w-42 md:w-48 h-auto object-contain drop-shadow-[0_18px_22px_rgba(0,0,0,0.25)]"
-                  />
-                  {/* Soft realistic floating shadow underneath */}
-                  <div className="w-20 sm:w-28 h-3 sm:h-4 bg-black/20 rounded-full blur-md mx-auto -mt-2 animate-shadow-2" />
-                </div>
-              </div>
+            {/* Right: Flawless Floating Coffee Cups Duo (Pure coffee, zero background, overflowing out of the top box) */}
+            <div className="relative shrink-0 flex items-center justify-center pointer-events-none -mt-8 sm:-mt-14 md:-mt-22">
+              <img
+                src="/images/hero-floating-duo.png"
+                alt="Lokale Floating Coffee & Matcha Duo"
+                className="w-36 sm:w-60 md:w-80 lg:w-96 h-auto object-contain drop-shadow-[0_16px_25px_rgba(0,0,0,0.28)] animate-hero-cup-1"
+              />
             </div>
           </div>
         </div>
       </section>
 
       {/* Main Catalog Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 flex-1 w-full space-y-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 flex-1 w-full space-y-5 sm:space-y-6">
         {/* Sub-header Bar: Subtitle on Left, Search Bar on Right */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 py-1 sm:py-2">
           <p className="text-xs sm:text-sm font-medium text-slate-600">
             Temukan menu favorit untuk melengkapi aktivitasmu hari ini.
           </p>
@@ -290,7 +270,7 @@ export default function CustomerPortalPage() {
             </div>
             <button
               type="button"
-              className="px-5 py-2 rounded-full bg-[#007b9e] hover:bg-[#006e8d] text-white text-xs sm:text-sm font-bold shadow-sm shadow-cyan-900/10 transition-all shrink-0"
+              className="px-4 sm:px-5 py-2 rounded-full bg-[#007b9e] hover:bg-[#006e8d] text-white text-xs sm:text-sm font-bold shadow-sm shadow-cyan-900/10 transition-all shrink-0"
             >
               Search
             </button>
@@ -298,20 +278,20 @@ export default function CustomerPortalPage() {
         </div>
 
         {/* 2-Column Layout: Sidebar Categories on Left, Grid Cards on Right */}
-        <div className="flex flex-col md:flex-row gap-6 lg:gap-8 items-start">
-          {/* Left Category Sidebar */}
-          <aside className="w-full md:w-48 lg:w-56 shrink-0 bg-white rounded-3xl p-3.5 sm:p-4 border border-slate-100 shadow-sm md:sticky md:top-24">
-            <h2 className="text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-3 px-3">
+        <div className="flex flex-col md:flex-row gap-5 lg:gap-8 items-start">
+          {/* Left Category Sidebar / Mobile Pill Bar */}
+          <aside className="w-full md:w-48 lg:w-56 shrink-0 bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-4 border border-slate-100 shadow-sm md:sticky md:top-24">
+            <h2 className="text-[10px] sm:text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-2 sm:mb-3 px-1 sm:px-3">
               KATEGORI
             </h2>
-            <div className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible pb-1 md:pb-0 scrollbar-none">
+            <div className="flex md:flex-col gap-1.5 overflow-x-auto md:overflow-visible pb-1 md:pb-0 scrollbar-none -mx-1 px-1">
               {CATEGORIES.map((cat) => {
                 const isActive = selectedCategory === cat.id;
                 return (
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`w-full text-left px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                    className={`text-left px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 shrink-0 md:shrink md:w-full ${
                       isActive
                         ? 'bg-[#007b9e] text-white shadow-sm shadow-cyan-900/20'
                         : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
