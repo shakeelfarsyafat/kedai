@@ -330,7 +330,7 @@ export default function AdminLoginPage() {
               <div className="flex justify-between items-center text-[10px]">
                 <span className="text-slate-400">Owner Email / Sandi:</span>
                 <span className="font-mono text-slate-300">
-                  admin@kroma.coffee / kroma2026
+                  admin@brewbean.coffee / brewbean2026
                 </span>
               </div>
             </div>

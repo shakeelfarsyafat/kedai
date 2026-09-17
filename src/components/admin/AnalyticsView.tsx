@@ -48,7 +48,7 @@ export const AnalyticsView: React.FC = () => {
   if (!mounted || !data) {
     return (
       <div className="h-64 flex items-center justify-center text-slate-500 text-sm">
-        Memuat statistik penjualan Lokale...
+        Memuat statistik penjualan Brew Bean...
       </div>
     );
   }
@@ -63,17 +63,17 @@ export const AnalyticsView: React.FC = () => {
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
               Total Pendapatan
             </span>
-            <div className="w-8 h-8 rounded-xl bg-[#007b9e]/15 border border-[#007b9e]/30 flex items-center justify-center text-cyan-300">
-              <DollarSign className="w-4 h-4" />
+            <div className="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-300">
+              <TrendingUp className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-extrabold text-white">
+            <div className="text-2xl font-black text-white">
               {formatRupiah(data.totalRevenueToday)}
             </div>
-            <div className="mt-1 flex items-center gap-1 text-[11px] text-emerald-400 font-semibold">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>+18.4% dari target harian</span>
+            <div className="mt-1 text-[11px] text-emerald-400 font-semibold flex items-center gap-1">
+              <span>+18.4%</span>
+              <span className="text-slate-400 font-normal">vs kemarin</span>
             </div>
           </div>
         </div>
@@ -82,43 +82,39 @@ export const AnalyticsView: React.FC = () => {
         <div className="bg-[#0d171d] border border-[#1c3340] rounded-2xl p-5 shadow-lg relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Jumlah Transaksi
+              Total Pesanan
             </span>
-            <div className="w-8 h-8 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-cyan-300">
+            <div className="w-8 h-8 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center text-blue-300">
               <ShoppingBag className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-extrabold text-white">{data.totalOrdersToday} Pesanan</div>
-            <div className="mt-1 flex items-center gap-1 text-[11px] text-slate-400">
-              <span className="text-cyan-400 font-medium">{data.activeOrdersCount} pesanan</span>
-              <span>sedang aktif</span>
+            <div className="text-2xl font-black text-white">{data.totalOrdersToday}</div>
+            <div className="mt-1 text-[11px] text-slate-400">
+              {data.activeOrdersCount} pesanan sedang aktif
             </div>
           </div>
         </div>
 
-        {/* Nilai Rata-rata Transaksi (AOV) */}
+        {/* Rata-Rata Transaksi (AOV) */}
         <div className="bg-[#0d171d] border border-[#1c3340] rounded-2xl p-5 shadow-lg relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-              Rata-rata Order (AOV)
+              Rata-Rata Order
             </span>
             <div className="w-8 h-8 rounded-xl bg-purple-500/15 border border-purple-500/30 flex items-center justify-center text-purple-300">
-              <TrendingUp className="w-4 h-4" />
+              <DollarSign className="w-4 h-4" />
             </div>
           </div>
           <div className="mt-3">
-            <div className="text-2xl font-extrabold text-white">
+            <div className="text-2xl font-black text-white">
               {formatRupiah(data.averageOrderValue)}
             </div>
-            <div className="mt-1 flex items-center gap-1 text-[11px] text-emerald-400 font-semibold">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>Rerata per pelanggan</span>
-            </div>
+            <div className="mt-1 text-[11px] text-slate-400">Nilai keranjang rata-rata</div>
           </div>
         </div>
 
-        {/* Menu Terlaris Utama */}
+        {/* Top Performer */}
         <div className="bg-[#0d171d] border border-[#1c3340] rounded-2xl p-5 shadow-lg relative overflow-hidden">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
@@ -130,7 +126,7 @@ export const AnalyticsView: React.FC = () => {
           </div>
           <div className="mt-3">
             <div className="text-lg font-bold text-cyan-200 line-clamp-1">
-              {data.topSellingItems[0]?.name || 'Lokale Signature Palm Latte'}
+              {data.topSellingItems[0]?.name || 'Brew Bean Signature Macchiato'}
             </div>
             <div className="mt-1 text-[11px] text-slate-400">
               {data.topSellingItems[0]?.quantitySold || 0} porsi terjual hari ini

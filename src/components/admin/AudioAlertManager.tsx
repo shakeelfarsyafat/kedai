@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { soundEngine } from '@/lib/audio';
-import { Volume2, VolumeX, BellRing, Sparkles, Check } from 'lucide-react';
+import { Volume2, VolumeX, BellRing } from 'lucide-react';
 
 export const AudioAlertManager: React.FC = () => {
   const [isMuted, setIsMuted] = useState(false);

@@ -145,9 +145,9 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: 'lok-04',
-    name: 'lokale Signature Macchiato',
+    name: 'Brew Bean Signature Macchiato',
     category: 'macchiato',
-    description: 'Kopi susu andalan lokale dengan lapisan cold foam macchiato manis gurih di atasnya.',
+    description: 'Kopi susu andalan Brew Bean dengan lapisan cold foam macchiato manis gurih di atasnya.',
     tastingNotes: ['Sweet Foam', 'Salted Caramel', 'Velvety'],
     price: 32000,
     image: '/images/prod-macchiato.png',
@@ -157,9 +157,9 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: 'lok-05',
-    name: 'Kopi Susu lokale',
+    name: 'Kopi Susu Brew Bean',
     category: 'coffee',
-    description: 'Kopi susu gula aren khas racikan rahasia lokale yang creamy dan legit.',
+    description: 'Kopi susu gula aren khas racikan rahasia Brew Bean yang creamy dan legit.',
     tastingNotes: ['Gula Aren', 'Creamy', 'Comforting'],
     price: 24000,
     image: '/images/hero-latte.png',
@@ -204,7 +204,7 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: 'lok-09',
-    name: 'lokale Milk Tea',
+    name: 'Brew Bean Milk Tea',
     category: 'milk-tea',
     description: 'Teh hitam pilihan diseduh dengan susu segar dan sentuhan karamel lembut.',
     tastingNotes: ['Ceylon Tea', 'Smooth Cream', 'Floral'],
@@ -227,7 +227,7 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     id: 'lok-11',
-    name: 'lokale-IN Kopi Susu Raya',
+    name: 'Brew Bean-IN Kopi Susu Raya',
     category: 'lokale-in-250',
     description: 'Kopi Susu Raya dalam kemasan botol kaca 250ml praktis, siap diminum kapan saja.',
     tastingNotes: ['Chilled', 'Ready to Drink', 'Rich'],

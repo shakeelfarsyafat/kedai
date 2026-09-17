@@ -27,6 +27,16 @@ const VALID_PINS: Record<string, AdminUser> = {
 
 const VALID_CREDENTIALS = [
   {
+    email: 'admin@brewbean.coffee',
+    password: 'brewbean2026',
+    user: { id: 'usr-admin', name: 'Store Owner', role: 'owner' as const, shift: 'All Shifts' },
+  },
+  {
+    email: 'barista@brewbean.coffee',
+    password: 'brewbean2026',
+    user: { id: 'usr-barista', name: 'Barista Kasir', role: 'barista' as const, shift: 'Shift Aktif' },
+  },
+  {
     email: 'admin@kroma.coffee',
     password: 'kroma2026',
     user: { id: 'usr-admin', name: 'Store Owner', role: 'owner' as const, shift: 'All Shifts' },

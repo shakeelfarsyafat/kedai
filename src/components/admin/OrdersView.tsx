@@ -12,13 +12,9 @@ import {
   Clock,
   AlertCircle,
   Coffee,
-  ShoppingBag,
-  Sparkles,
   PlusCircle,
-  Filter,
   DollarSign,
   Receipt,
-  XCircle,
 } from 'lucide-react';
 
 interface OrdersViewProps {

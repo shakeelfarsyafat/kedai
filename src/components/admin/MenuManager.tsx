@@ -195,7 +195,7 @@ export const MenuManager: React.FC = () => {
   };
 
   const handleResetCatalog = () => {
-    if (confirm('Kembalikan seluruh menu ke katalog default Lokale Coffee?')) {
+    if (confirm('Kembalikan seluruh menu ke katalog default Brew Bean?')) {
       menuStore.resetToDefault();
     }
   };
@@ -273,7 +273,7 @@ export const MenuManager: React.FC = () => {
           <button
             onClick={handleResetCatalog}
             className="px-3.5 py-2 rounded-xl bg-[#080e12] hover:bg-[#13222a] text-slate-300 hover:text-white text-xs font-semibold border border-[#1c3340] transition-colors flex items-center gap-1.5"
-            title="Reset ke katalog asli Lokale"
+            title="Reset ke katalog asli Brew Bean"
           >
             <RotateCcw className="w-3.5 h-3.5 text-[#007b9e]" />
             <span className="hidden sm:inline">Reset Default</span>

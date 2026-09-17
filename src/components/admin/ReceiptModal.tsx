@@ -4,7 +4,7 @@ import React from 'react';
 import { Order } from '@/types/coffee';
 import { formatRupiah } from '@/lib/utils';
 import { printThermalReceipt } from '@/lib/receiptPrinter';
-import { Printer, X, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Printer, X } from 'lucide-react';
 
 interface ReceiptModalProps {
   order: Order | null;

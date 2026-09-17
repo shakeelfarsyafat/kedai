@@ -14,16 +14,11 @@ import { OrderHistoryTable } from '@/components/admin/OrderHistoryTable';
 import { MenuManager } from '@/components/admin/MenuManager';
 import { formatRupiah } from '@/lib/utils';
 import {
-  Coffee,
-  LayoutDashboard,
   BarChart3,
   History,
   Store,
   Bell,
-  Sparkles,
-  CheckCircle2,
   X,
-  Volume2,
   UtensilsCrossed,
   LogOut,
   UserCheck,
