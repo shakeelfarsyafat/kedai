@@ -1,0 +1,294 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { AnalyticsSummary } from '@/types/coffee';
+import { orderStore } from '@/lib/orderStore';
+import { formatRupiah } from '@/lib/utils';
+import {
+  DollarSign,
+  ShoppingBag,
+  TrendingUp,
+  Award,
+  Coffee,
+  Calendar,
+  Layers,
+  ArrowUpRight,
+} from 'lucide-react';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from 'recharts';
+
+export const AnalyticsView: React.FC = () => {
+  const [data, setData] = useState<AnalyticsSummary | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    setData(orderStore.getAnalytics());
+
+    const unsubscribe = orderStore.subscribe(() => {
+      setData(orderStore.getAnalytics());
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (!mounted || !data) {
+    return (
+      <div className="h-64 flex items-center justify-center text-stone-500 text-sm">
+        Memuat statistik penjualan...
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* 4 KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Total Pendapatan */}
+        <div className="bg-[#1a110a] border border-amber-900/30 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
+              Total Pendapatan
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+              <DollarSign className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl font-extrabold text-white">
+              {formatRupiah(data.totalRevenueToday)}
+            </div>
+            <div className="mt-1 flex items-center gap-1 text-[11px] text-emerald-400">
+              <ArrowUpRight className="w-3.5 h-3.5" />
+              <span>+18.4% dari kemarin</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Total Pesanan */}
+        <div className="bg-[#1a110a] border border-amber-900/30 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
+              Jumlah Transaksi
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
+              <ShoppingBag className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl font-extrabold text-white">{data.totalOrdersToday} Pesanan</div>
+            <div className="mt-1 flex items-center gap-1 text-[11px] text-stone-400">
+              <span>{data.activeOrdersCount} pesanan sedang aktif</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Nilai Rata-rata Transaksi (AOV) */}
+        <div className="bg-[#1a110a] border border-amber-900/30 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
+              Rata-rata Order (AOV)
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
+              <TrendingUp className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-2xl font-extrabold text-white">
+              {formatRupiah(data.averageOrderValue)}
+            </div>
+            <div className="mt-1 flex items-center gap-1 text-[11px] text-emerald-400">
+              <ArrowUpRight className="w-3.5 h-3.5" />
+              <span>Per transaksi hari ini</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Menu Terlaris Utama */}
+        <div className="bg-[#1a110a] border border-amber-900/30 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-stone-400">
+              Menu Terlaris
+            </span>
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <Award className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3">
+            <div className="text-lg font-bold text-amber-200 line-clamp-1">
+              {data.topSellingItems[0]?.name || 'Signature Palm Latte'}
+            </div>
+            <div className="mt-1 text-[11px] text-stone-400">
+              {data.topSellingItems[0]?.quantitySold || 0} porsi terjual hari ini
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Revenue Trend Area Chart */}
+      <div className="bg-[#181009] border border-stone-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-amber-500" />
+              <span>Tren Pendapatan & Volume Pesanan</span>
+            </h3>
+            <p className="text-xs text-stone-400 mt-0.5">
+              Distribusi penjualan per 2 jam operasional kedai
+            </p>
+          </div>
+          <div className="px-3 py-1 rounded-xl bg-stone-900 border border-stone-800 text-xs text-stone-300 font-medium">
+            Hari Ini • Live Data
+          </div>
+        </div>
+
+        <div className="h-72 w-full pt-4">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data.hourlyRevenue} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="amberRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#d97706" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="#d97706" stopOpacity={0.0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#2a1e16" vertical={false} />
+              <XAxis dataKey="hour" stroke="#786659" fontSize={11} tickLine={false} />
+              <YAxis
+                stroke="#786659"
+                fontSize={11}
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(val) => `Rp${val / 1000}k`}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#1f140c',
+                  border: '1px solid #78350f',
+                  borderRadius: '12px',
+                  color: '#fff',
+                  fontSize: '12px',
+                }}
+                formatter={(val: any) => [formatRupiah(Number(val)), 'Pendapatan']}
+                labelFormatter={(label) => `Pukul ${label}`}
+              />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="#f59e0b"
+                strokeWidth={3}
+                fillOpacity={1}
+                fill="url(#amberRevenue)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Two Column Layout: Top Selling Bar Chart + Category Distribution Donut */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Top Selling Leaderboard Bar Chart */}
+        <div className="bg-[#181009] border border-stone-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
+          <div>
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <Award className="w-4 h-4 text-amber-500" />
+              <span>Produk Terlaris (Top Selling)</span>
+            </h3>
+            <p className="text-xs text-stone-400 mt-0.5">Jumlah porsi yang paling sering dibeli</p>
+          </div>
+
+          <div className="h-64 w-full pt-2">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={data.topSellingItems}
+                layout="vertical"
+                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#2a1e16" horizontal={false} />
+                <XAxis type="number" stroke="#786659" fontSize={11} tickLine={false} />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  stroke="#a89283"
+                  fontSize={11}
+                  tickLine={false}
+                  width={110}
+                  tickFormatter={(val) => (val.length > 15 ? `${val.substring(0, 14)}..` : val)}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1f140c',
+                    border: '1px solid #78350f',
+                    borderRadius: '12px',
+                    color: '#fff',
+                    fontSize: '12px',
+                  }}
+                  formatter={(val: any, name: any, item: any) => [
+                    `${val} porsi (${formatRupiah(item.payload.revenue)})`,
+                    'Terjual',
+                  ]}
+                />
+                <Bar dataKey="quantitySold" fill="#d97706" radius={[0, 8, 8, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Category Share Donut Chart */}
+        <div className="bg-[#181009] border border-stone-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
+          <div>
+            <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <Layers className="w-4 h-4 text-amber-500" />
+              <span>Komposisi Kategori Pesanan</span>
+            </h3>
+            <p className="text-xs text-stone-400 mt-0.5">Persentase kontribusi per kategori menu</p>
+          </div>
+
+          <div className="h-64 w-full flex items-center justify-center">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={data.categoryDistribution}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={80}
+                  paddingAngle={4}
+                  dataKey="value"
+                >
+                  {data.categoryDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: '#1f140c',
+                    border: '1px solid #78350f',
+                    borderRadius: '12px',
+                    color: '#fff',
+                    fontSize: '12px',
+                  }}
+                />
+                <Legend
+                  formatter={(val) => <span className="text-stone-300 text-xs">{val}</span>}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
