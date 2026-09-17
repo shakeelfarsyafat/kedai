@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MenuItem, CategoryId } from '@/types/coffee';
 import { menuStore } from '@/lib/menuStore';
 import { CATEGORIES } from '@/lib/mockData';
 import { formatRupiah } from '@/lib/utils';
+import { compressMenuImage, CompressionResult } from '@/lib/imageCompression';
 import {
   Plus,
   Edit2,
@@ -18,7 +19,10 @@ import {
   Award,
   Flame,
   X,
-  SlidersHorizontal,
+  UploadCloud,
+  Image as ImageIcon,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
 
 export const MenuManager: React.FC = () => {
@@ -33,7 +37,7 @@ export const MenuManager: React.FC = () => {
 
   // Form State
   const [name, setName] = useState('');
-  const [category, setCategory] = useState<CategoryId>('espresso');
+  const [category, setCategory] = useState<CategoryId>('coffee');
   const [price, setPrice] = useState<number>(30000);
   const [description, setDescription] = useState('');
   const [image, setImage] = useState('');
@@ -41,6 +45,13 @@ export const MenuManager: React.FC = () => {
   const [isBestSeller, setIsBestSeller] = useState(false);
   const [isBaristaPick, setIsBaristaPick] = useState(false);
   const [allowCustomization, setAllowCustomization] = useState(true);
+
+  // Image Upload & Compression State
+  const [isCompressing, setIsCompressing] = useState(false);
+  const [compressionInfo, setCompressionInfo] = useState<CompressionResult | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setItems(menuStore.getMenuItems());
@@ -53,14 +64,16 @@ export const MenuManager: React.FC = () => {
   const openAddModal = () => {
     setEditingItem(null);
     setName('');
-    setCategory('espresso');
-    setPrice(32000);
+    setCategory('coffee');
+    setPrice(28000);
     setDescription('');
-    setImage('https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=800&auto=format&fit=crop');
-    setTastingNotesStr('Caramel, Nutty, Sweet Crema');
+    setImage('/images/prod-americano.png');
+    setTastingNotesStr('Palm Sugar, Creamy Espresso, Milk');
     setIsBestSeller(false);
     setIsBaristaPick(false);
     setAllowCustomization(true);
+    setCompressionInfo(null);
+    setUploadError(null);
     setIsModalOpen(true);
   };
 
@@ -75,7 +88,59 @@ export const MenuManager: React.FC = () => {
     setIsBestSeller(!!item.isBestSeller);
     setIsBaristaPick(!!item.isBaristaPick);
     setAllowCustomization(item.allowCustomization);
+    setCompressionInfo(null);
+    setUploadError(null);
     setIsModalOpen(true);
+  };
+
+  const handleFileProcess = async (file: File) => {
+    setUploadError(null);
+    setIsCompressing(true);
+
+    try {
+      const result = await compressMenuImage(file, { maxDimension: 800, quality: 0.82 });
+      setImage(result.dataUrl);
+      setCompressionInfo(result);
+    } catch (err: any) {
+      setUploadError(err?.message || 'Gagal memproses gambar.');
+    } finally {
+      setIsCompressing(false);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileProcess(file);
+    }
+    // reset input so same file can be re-selected if desired
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      handleFileProcess(file);
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleRemovePhoto = () => {
+    setImage('');
+    setCompressionInfo(null);
+    setUploadError(null);
   };
 
   const handleSaveItem = (e: React.FormEvent) => {
@@ -87,13 +152,15 @@ export const MenuManager: React.FC = () => {
       .map((n) => n.trim())
       .filter(Boolean);
 
+    const finalImage = image.trim() || '/images/prod-americano.png';
+
     if (editingItem) {
       menuStore.updateMenuItem(editingItem.id, {
         name: name.trim(),
         category,
         price,
         description: description.trim(),
-        image: image.trim() || editingItem.image,
+        image: finalImage,
         tastingNotes: notes.length > 0 ? notes : undefined,
         isBestSeller,
         isBaristaPick,
@@ -105,9 +172,7 @@ export const MenuManager: React.FC = () => {
         category,
         price,
         description: description.trim(),
-        image:
-          image.trim() ||
-          'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?q=80&w=800&auto=format&fit=crop',
+        image: finalImage,
         tastingNotes: notes.length > 0 ? notes : undefined,
         isBestSeller,
         isBaristaPick,
@@ -130,7 +195,7 @@ export const MenuManager: React.FC = () => {
   };
 
   const handleResetCatalog = () => {
-    if (confirm('Kembalikan seluruh menu ke katalog awal standar?')) {
+    if (confirm('Kembalikan seluruh menu ke katalog default Lokale Coffee?')) {
       menuStore.resetToDefault();
     }
   };
@@ -149,45 +214,53 @@ export const MenuManager: React.FC = () => {
     return matchesCategory && matchesSearch && matchesStock;
   });
 
+  const availableCategories = CATEGORIES.filter((c) => c.id !== 'all');
+
   return (
     <div className="space-y-6">
       {/* Top Action Bar: Search, Category, Stock Filters, Add Button */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-[#181009] p-4 sm:p-5 rounded-2xl border border-stone-800 shadow-xl">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 bg-[#0d171d] p-4 sm:p-5 rounded-2xl border border-[#1c3340] shadow-xl">
         <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
           {/* Search bar */}
           <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-2.5 w-3.5 h-3.5 text-stone-500" />
+            <Search className="absolute left-3.5 top-2.5 w-3.5 h-3.5 text-slate-400" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Cari nama menu..."
-              className="w-full bg-stone-900 border border-stone-800 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-stone-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="w-full bg-[#080e12] border border-[#1c3340] rounded-xl pl-9 pr-3.5 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#007b9e] focus:border-transparent transition-all"
             />
           </div>
 
           {/* Stock filter */}
-          <div className="flex items-center bg-stone-900 p-0.5 rounded-xl border border-stone-800 text-xs">
+          <div className="flex items-center bg-[#080e12] p-1 rounded-xl border border-[#1c3340] text-xs">
             <button
               onClick={() => setFilterStock('all')}
-              className={`px-3 py-1 rounded-lg font-medium transition-all ${
-                filterStock === 'all' ? 'bg-amber-600 text-white' : 'text-stone-400'
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                filterStock === 'all'
+                  ? 'bg-[#007b9e] text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               Semua
             </button>
             <button
               onClick={() => setFilterStock('available')}
-              className={`px-3 py-1 rounded-lg font-medium transition-all ${
-                filterStock === 'available' ? 'bg-emerald-600 text-white' : 'text-stone-400'
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                filterStock === 'available'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               Tersedia
             </button>
             <button
               onClick={() => setFilterStock('out_of_stock')}
-              className={`px-3 py-1 rounded-lg font-medium transition-all ${
-                filterStock === 'out_of_stock' ? 'bg-red-600 text-white' : 'text-stone-400'
+              className={`px-3 py-1.5 rounded-lg font-semibold transition-all ${
+                filterStock === 'out_of_stock'
+                  ? 'bg-red-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
               Stok Habis
@@ -196,19 +269,19 @@ export const MenuManager: React.FC = () => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
           <button
             onClick={handleResetCatalog}
-            className="px-3 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-stone-400 hover:text-white text-xs font-semibold border border-stone-800 transition-colors flex items-center gap-1.5"
-            title="Reset ke katalog asli"
+            className="px-3.5 py-2 rounded-xl bg-[#080e12] hover:bg-[#13222a] text-slate-300 hover:text-white text-xs font-semibold border border-[#1c3340] transition-colors flex items-center gap-1.5"
+            title="Reset ke katalog asli Lokale"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5 text-[#007b9e]" />
             <span className="hidden sm:inline">Reset Default</span>
           </button>
 
           <button
             onClick={openAddModal}
-            className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white text-xs font-bold shadow-lg shadow-amber-950 transition-all flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#007b9e] to-[#075f7e] hover:from-[#006e8d] hover:to-[#05516b] text-white text-xs font-bold shadow-lg shadow-cyan-950/50 transition-all flex items-center gap-1.5 active:scale-95"
           >
             <Plus className="w-4 h-4" />
             <span>Tambah Menu Baru</span>
@@ -224,8 +297,8 @@ export const MenuManager: React.FC = () => {
             onClick={() => setSelectedCat(cat.id)}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all ${
               selectedCat === cat.id
-                ? 'bg-amber-600/30 border-amber-500 text-amber-200'
-                : 'bg-stone-900/60 border-stone-800 text-stone-400 hover:border-stone-700'
+                ? 'bg-[#007b9e]/25 border-[#007b9e] text-cyan-200 shadow-sm'
+                : 'bg-[#0d171d] border-[#1c3340] text-slate-400 hover:border-slate-600 hover:text-white'
             }`}
           >
             {cat.name}
@@ -238,97 +311,113 @@ export const MenuManager: React.FC = () => {
         {filtered.map((item) => (
           <div
             key={item.id}
-            className={`p-4 rounded-2xl bg-[#1a110a] border transition-all flex flex-col justify-between gap-3 shadow-lg ${
+            className={`p-4 rounded-2xl bg-[#0d171d] border transition-all flex flex-col justify-between gap-3.5 shadow-lg ${
               item.available
-                ? 'border-stone-800/80 hover:border-amber-700/50'
-                : 'border-red-900/30 bg-[#160d07] opacity-75'
+                ? 'border-[#1c3340] hover:border-[#007b9e]/60'
+                : 'border-red-900/30 bg-[#120e0e] opacity-75'
             }`}
           >
             {/* Top row: Image thumbnail & info */}
             <div className="flex items-start gap-3.5">
-              <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-stone-900 flex-shrink-0">
+              <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-[#080e12] border border-[#1c3340] flex-shrink-0 flex items-center justify-center">
                 <img
                   src={item.image}
                   alt={item.name}
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to default cup icon if image link broken
+                    (e.target as HTMLImageElement).src = '/images/prod-americano.png';
+                  }}
                 />
-                {!item.available && (
-                  <div className="absolute inset-0 bg-black/70 flex items-center justify-center text-[9px] font-bold text-red-400 uppercase text-center p-1 leading-tight">
-                    Habis
-                  </div>
-                )}
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-amber-950/80 text-amber-400 border border-amber-900/50">
+                  <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-[#007b9e]/20 text-cyan-300 border border-[#007b9e]/40">
                     {item.category}
                   </span>
                   {item.isBestSeller && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500 text-stone-950 flex items-center gap-0.5">
-                      <Flame className="w-2.5 h-2.5 fill-stone-950" />
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-0.5">
+                      <Flame className="w-2.5 h-2.5 text-amber-400" />
                       Best Seller
                     </span>
                   )}
                   {item.isBaristaPick && (
-                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/90 text-stone-950 flex items-center gap-0.5">
-                      <Award className="w-2.5 h-2.5" />
-                      Barista Pick
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-0.5">
+                      <Award className="w-2.5 h-2.5 text-purple-400" />
+                      Pilihan Barista
                     </span>
                   )}
                 </div>
 
-                <h4 className="font-bold text-sm text-white mt-1 truncate">{item.name}</h4>
-                <p className="text-xs font-extrabold text-amber-400 mt-0.5">
+                <h3 className="font-bold text-sm text-white mt-1 truncate">{item.name}</h3>
+                <p className="text-xs font-extrabold text-cyan-400 mt-0.5">
                   {formatRupiah(item.price)}
                 </p>
-                <p className="text-[11px] text-stone-400 line-clamp-1 mt-0.5">{item.description}</p>
+
+                {item.description && (
+                  <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">
+                    {item.description}
+                  </p>
+                )}
               </div>
             </div>
 
-            {/* Bottom row: Availability Toggle & Edit/Delete actions */}
-            <div className="flex items-center justify-between pt-3 border-t border-stone-800/80">
-              {/* Availability Stock Toggle */}
+            {/* Tasting Notes */}
+            {item.tastingNotes && item.tastingNotes.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {item.tastingNotes.map((note, idx) => (
+                  <span
+                    key={idx}
+                    className="text-[10px] px-2 py-0.5 rounded-full bg-[#080e12] border border-[#1c3340] text-slate-300"
+                  >
+                    {note}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Bottom Row: Stock Toggle & Actions */}
+            <div className="pt-2.5 border-t border-[#1c3340] flex items-center justify-between gap-2">
+              {/* Toggle Stock */}
               <button
                 type="button"
                 onClick={() => handleToggleStock(item.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-semibold transition-all border ${
+                className={`px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
                   item.available
-                    ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/40'
-                    : 'bg-red-950/60 border-red-500/40 text-red-300 hover:bg-red-900/40'
+                    ? 'bg-emerald-950/70 border border-emerald-800/60 text-emerald-300 hover:bg-emerald-900/60'
+                    : 'bg-red-950/70 border border-red-800/60 text-red-300 hover:bg-red-900/60'
                 }`}
-                title="Klik untuk mengubah status ketersediaan di katalog pelanggan"
               >
                 {item.available ? (
                   <>
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Tersedia (Ready)</span>
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Tersedia</span>
                   </>
                 ) : (
                   <>
-                    <XCircle className="w-3.5 h-3.5 text-red-400" />
-                    <span>Stok Habis (Sold Out)</span>
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Habis</span>
                   </>
                 )}
               </button>
 
-              {/* Edit & Delete */}
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => openEditModal(item)}
-                  className="p-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-stone-300 hover:text-white border border-stone-800 transition-colors"
-                  title="Edit Menu"
+                  className="p-1.5 rounded-lg bg-[#080e12] hover:bg-[#14232b] text-slate-300 hover:text-white border border-[#1c3340] transition-colors"
+                  title="Edit menu"
                 >
-                  <Edit2 className="w-3.5 h-3.5" />
+                  <Edit2 className="w-3.5 h-3.5 text-[#007b9e]" />
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDelete(item.id, item.name)}
-                  className="p-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-stone-400 hover:text-red-400 border border-stone-800 transition-colors"
-                  title="Hapus Menu"
+                  className="p-1.5 rounded-lg bg-[#080e12] hover:bg-red-950/70 text-slate-400 hover:text-red-300 border border-[#1c3340] hover:border-red-900 transition-colors"
+                  title="Hapus menu"
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
+                  <Trash2 className="w-3.5 h-3.5 text-red-400" />
                 </button>
               </div>
             </div>
@@ -336,57 +425,63 @@ export const MenuManager: React.FC = () => {
         ))}
       </div>
 
-      {/* Add / Edit Menu Modal */}
+      {/* Edit / Add Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-          <div className="w-full max-w-lg max-h-[90vh] bg-[#1c120a] border border-amber-900/40 rounded-3xl p-6 text-white shadow-2xl overflow-y-auto space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-stone-800">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Coffee className="w-5 h-5 text-amber-500" />
-                <span>{editingItem ? 'Edit Menu' : 'Tambah Menu Baru'}</span>
-              </h3>
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-lg max-h-[90vh] bg-[#0d171d] border border-[#1c3340] rounded-3xl p-6 text-white shadow-2xl overflow-y-auto space-y-4 selection:bg-[#007b9e]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#1c3340]">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-[#007b9e]/20 border border-[#007b9e]/40 flex items-center justify-center">
+                  <Coffee className="w-4 h-4 text-cyan-400" />
+                </div>
+                <h2 className="text-base font-bold text-white">
+                  {editingItem ? 'Edit Informasi Menu' : 'Tambah Menu Baru'}
+                </h2>
+              </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-full hover:bg-stone-800 text-stone-400 hover:text-white"
+                className="p-1.5 rounded-full hover:bg-slate-800 text-slate-400 hover:text-white transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveItem} className="space-y-3.5 text-xs">
+            <form onSubmit={handleSaveItem} className="space-y-4 text-xs">
+              {/* Nama Menu */}
               <div>
-                <label className="font-semibold text-stone-300 block mb-1">
-                  Nama Menu <span className="text-amber-500">*</span>
+                <label className="font-semibold text-slate-300 block mb-1">
+                  Nama Menu <span className="text-[#007b9e]">*</span>
                 </label>
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Contoh: Sea Salt Caramel Cold Brew"
-                  className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  placeholder="Contoh: Lokale Signature Palm Latte"
+                  className="w-full bg-[#080e12] border border-[#1c3340] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#007b9e] transition-all"
                 />
               </div>
 
+              {/* Kategori & Harga */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-semibold text-stone-300 block mb-1">Kategori</label>
+                  <label className="font-semibold text-slate-300 block mb-1">Kategori</label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value as CategoryId)}
-                    className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    className="w-full bg-[#080e12] border border-[#1c3340] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#007b9e] transition-all"
                   >
-                    <option value="espresso">Espresso & Milk</option>
-                    <option value="manual-brew">Manual Brew</option>
-                    <option value="cold-brew">Cold Brew & Tea</option>
-                    <option value="pastry">Pastry & Bakery</option>
-                    <option value="snacks">Snacks & Toast</option>
+                    {availableCategories.map((c) => (
+                      <option key={c.id} value={c.id} className="bg-[#0d171d] text-white">
+                        {c.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
-                  <label className="font-semibold text-stone-300 block mb-1">
-                    Harga (Rp) <span className="text-amber-500">*</span>
+                  <label className="font-semibold text-slate-300 block mb-1">
+                    Harga (Rp) <span className="text-[#007b9e]">*</span>
                   </label>
                   <input
                     type="number"
@@ -395,56 +490,168 @@ export const MenuManager: React.FC = () => {
                     step={1000}
                     value={price}
                     onChange={(e) => setPrice(Number(e.target.value))}
-                    className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                    className="w-full bg-[#080e12] border border-[#1c3340] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#007b9e] transition-all"
                   />
                 </div>
               </div>
 
+              {/* Deskripsi */}
               <div>
-                <label className="font-semibold text-stone-300 block mb-1">Deskripsi Menu</label>
+                <label className="font-semibold text-slate-300 block mb-1">Deskripsi Menu</label>
                 <textarea
                   rows={2}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Deskripsi singkat rasa, komposisi, atau cara pembuatan..."
-                  className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-amber-500 resize-none"
+                  placeholder="Deskripsi singkat racikan, rasa, atau keunikan menu..."
+                  className="w-full bg-[#080e12] border border-[#1c3340] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#007b9e] transition-all resize-none"
                 />
               </div>
 
+              {/* Tasting Notes */}
               <div>
-                <label className="font-semibold text-stone-300 block mb-1">
+                <label className="font-semibold text-slate-300 block mb-1">
                   Tasting Notes (Pisahkan dengan koma)
                 </label>
                 <input
                   type="text"
                   value={tastingNotesStr}
                   onChange={(e) => setTastingNotesStr(e.target.value)}
-                  placeholder="Contoh: Bergamot, Wild Berry, Cane Sugar"
-                  className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  placeholder="Contoh: Brown Sugar, Creamy, Floral Jasmine"
+                  className="w-full bg-[#080e12] border border-[#1c3340] rounded-xl px-3.5 py-2 text-white focus:outline-none focus:ring-2 focus:ring-[#007b9e] transition-all"
                 />
               </div>
 
+              {/* Foto Produk: File Upload With Auto-Compression */}
               <div>
-                <label className="font-semibold text-stone-300 block mb-1">URL Foto Produk</label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="font-semibold text-slate-300">
+                    Foto Produk Menu
+                  </label>
+                  <span className="text-[10px] text-cyan-400 font-medium">
+                    Auto-compress JPG, JPEG, PNG
+                  </span>
+                </div>
+
+                {/* Hidden File Input */}
                 <input
-                  type="url"
-                  value={image}
-                  onChange={(e) => setImage(e.target.value)}
-                  placeholder="https://images.unsplash.com/photo-..."
-                  className="w-full bg-stone-900 border border-stone-800 rounded-xl px-3 py-2 text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                  onChange={handleFileChange}
+                  className="hidden"
                 />
+
+                {image ? (
+                  /* Current Image Preview with change/delete actions */
+                  <div className="p-3 bg-[#080e12] border border-[#1c3340] rounded-2xl flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-900 border border-[#1c3340] shrink-0 flex items-center justify-center">
+                        <img
+                          src={image}
+                          alt="Pratinjau foto menu"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-white flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                          Foto Siap Disimpan
+                        </p>
+                        {compressionInfo ? (
+                          <p className="text-[11px] text-cyan-300 mt-0.5">
+                            {compressionInfo.originalSize} ➔ {compressionInfo.compressedSize}{' '}
+                            <span className="text-emerald-400 font-bold">
+                              (Hemat {compressionInfo.savedPercentage}%)
+                            </span>
+                          </p>
+                        ) : (
+                          <p className="text-[10px] text-slate-400 mt-0.5 truncate">
+                            Foto aktif telah terpasang
+                          </p>
+                        )}
+                        <p className="text-[10px] text-slate-400">
+                          Format dioptimasi otomatis untuk web
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="px-3 py-1.5 rounded-lg bg-[#007b9e]/20 hover:bg-[#007b9e]/40 border border-[#007b9e]/40 text-cyan-300 font-semibold text-xs transition-colors"
+                      >
+                        Ganti Foto
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleRemovePhoto}
+                        className="px-3 py-1 rounded-lg hover:bg-red-950/50 text-red-400 text-[11px] transition-colors"
+                      >
+                        Hapus Foto
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  /* Drag and Drop Zone */
+                  <div
+                    onDrop={handleDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`border-2 border-dashed rounded-2xl p-5 text-center cursor-pointer transition-all flex flex-col items-center justify-center gap-2 ${
+                      isDragging
+                        ? 'border-[#007b9e] bg-[#007b9e]/10'
+                        : 'border-[#1c3340] bg-[#080e12] hover:border-[#007b9e]/60 hover:bg-[#0b141a]'
+                    }`}
+                  >
+                    {isCompressing ? (
+                      <div className="flex flex-col items-center gap-2 py-2">
+                        <Loader2 className="w-7 h-7 text-cyan-400 animate-spin" />
+                        <p className="text-xs font-semibold text-slate-300">
+                          Mengonversi & mengompres ukuran foto...
+                        </p>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="w-10 h-10 rounded-full bg-[#007b9e]/15 border border-[#007b9e]/30 flex items-center justify-center text-cyan-300">
+                          <UploadCloud className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-white">
+                            Klik atau drag & drop foto ke sini
+                          </p>
+                          <p className="text-[11px] text-slate-400 mt-0.5">
+                            Format yang didukung: <span className="text-cyan-300 font-semibold">JPG, JPEG, PNG</span>
+                          </p>
+                          <p className="text-[10px] text-slate-500 mt-1">
+                            Ukuran foto bebas — otomatis dikompres ke ukuran kecil & ringan
+                          </p>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* Error message */}
+                {uploadError && (
+                  <div className="mt-2 flex items-center gap-1.5 text-xs text-red-400 bg-red-950/40 p-2 rounded-xl border border-red-900/50">
+                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                    <span>{uploadError}</span>
+                  </div>
+                )}
               </div>
 
               {/* Badges and toggles */}
-              <div className="pt-2 border-t border-stone-800 space-y-2">
+              <div className="pt-2 border-t border-[#1c3340] space-y-2">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={isBestSeller}
                     onChange={(e) => setIsBestSeller(e.target.checked)}
-                    className="rounded text-amber-600 focus:ring-0"
+                    className="rounded text-[#007b9e] focus:ring-0 bg-[#080e12] border-[#1c3340]"
                   />
-                  <span className="text-stone-300">Tandai sebagai "Best Seller"</span>
+                  <span className="text-slate-300">Tandai sebagai "Best Seller"</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -452,9 +659,9 @@ export const MenuManager: React.FC = () => {
                     type="checkbox"
                     checked={isBaristaPick}
                     onChange={(e) => setIsBaristaPick(e.target.checked)}
-                    className="rounded text-amber-600 focus:ring-0"
+                    className="rounded text-[#007b9e] focus:ring-0 bg-[#080e12] border-[#1c3340]"
                   />
-                  <span className="text-stone-300">Tandai sebagai "Barista Pick"</span>
+                  <span className="text-slate-300">Tandai sebagai "Pilihan Barista"</span>
                 </label>
 
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -462,28 +669,28 @@ export const MenuManager: React.FC = () => {
                     type="checkbox"
                     checked={allowCustomization}
                     onChange={(e) => setAllowCustomization(e.target.checked)}
-                    className="rounded text-amber-600 focus:ring-0"
+                    className="rounded text-[#007b9e] focus:ring-0 bg-[#080e12] border-[#1c3340]"
                   />
-                  <span className="text-stone-300">
+                  <span className="text-slate-300">
                     Bolehkan Kustomisasi Pelanggan (Pilihan Gula, Es, dan Susu)
                   </span>
                 </label>
               </div>
 
               {/* Buttons */}
-              <div className="pt-3 border-t border-stone-800 flex justify-end gap-2">
+              <div className="pt-3 border-t border-[#1c3340] flex justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-300 font-semibold"
+                  className="px-4 py-2 rounded-xl bg-[#080e12] hover:bg-[#16252e] text-slate-300 font-semibold border border-[#1c3340] transition-colors"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold shadow-lg"
+                  className="px-5 py-2 rounded-xl bg-[#007b9e] hover:bg-[#006e8d] text-white font-bold shadow-lg shadow-cyan-950/40 transition-all active:scale-95"
                 >
-                  Simpan Perubahan
+                  Simpan Menu
                 </button>
               </div>
             </form>

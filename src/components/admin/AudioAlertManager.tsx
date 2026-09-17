@@ -42,7 +42,7 @@ export const AudioAlertManager: React.FC = () => {
       {audioState !== 'running' && !hasInteracted ? (
         <button
           onClick={handleEnableAudio}
-          className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-bold text-xs shadow-lg shadow-amber-500/20 transition-all animate-bounce"
+          className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#007b9e] hover:bg-[#006e8d] text-white font-bold text-xs shadow-lg shadow-cyan-950/40 transition-all animate-bounce"
         >
           <BellRing className="w-4 h-4 animate-pulse" />
           <span>Aktifkan Audio Notifikasi</span>
@@ -55,7 +55,7 @@ export const AudioAlertManager: React.FC = () => {
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
               !isMuted
                 ? 'bg-emerald-950/60 border-emerald-500/40 text-emerald-300'
-                : 'bg-stone-900 border-stone-800 text-stone-400'
+                : 'bg-[#080e12] border-[#1c3340] text-slate-400'
             }`}
             title={isMuted ? 'Suara Dinonaktifkan' : 'Suara Aktif'}
           >
@@ -66,7 +66,7 @@ export const AudioAlertManager: React.FC = () => {
               </>
             ) : (
               <>
-                <VolumeX className="w-3.5 h-3.5 text-stone-500" />
+                <VolumeX className="w-3.5 h-3.5 text-slate-500" />
                 <span>Audio Mute</span>
               </>
             )}
@@ -75,7 +75,7 @@ export const AudioAlertManager: React.FC = () => {
           {/* Test Sound Button */}
           <button
             onClick={handleTestSound}
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-[11px] font-medium text-stone-300 hover:text-white transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-[#080e12] hover:bg-[#14232b] border border-[#1c3340] text-[11px] font-medium text-slate-300 hover:text-white transition-colors"
           >
             <span>Tes Bel Ding</span>
           </button>
