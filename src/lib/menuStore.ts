@@ -1,6 +1,7 @@
 // Dynamic Menu Management Store with Neon DB persistence & Multi-Tab Broadcast
 import { MenuItem } from '@/types/coffee';
 import { MENU_ITEMS } from './mockData';
+import { stripWhiteBackgroundFromDataUrl } from './imageCompression';
 
 const MENU_STORAGE_KEY = 'lokale_coffee_menu_items_v5';
 const MENU_CHANNEL_NAME = 'lokale_coffee_menu_sync_bus';
@@ -37,6 +38,9 @@ class MenuStore {
 
     // Then fetch latest from Neon PostgreSQL database API
     this.fetchFromDb();
+
+    // Automatically strip white background from existing user uploads
+    this.cleanLegacyWhiteBackgrounds();
 
     if (typeof BroadcastChannel !== 'undefined') {
       this.channel = new BroadcastChannel(MENU_CHANNEL_NAME);
@@ -87,6 +91,31 @@ class MenuStore {
     if (typeof window === 'undefined') return;
     try {
       localStorage.setItem(MENU_STORAGE_KEY, JSON.stringify(this.items));
+    } catch {}
+  }
+
+  private async cleanLegacyWhiteBackgrounds() {
+    if (typeof window === 'undefined') return;
+    try {
+      let modified = false;
+      const updated = await Promise.all(
+        this.items.map(async (item) => {
+          if (item.image && item.image.startsWith('data:image')) {
+            const cleaned = await stripWhiteBackgroundFromDataUrl(item.image);
+            if (cleaned !== item.image) {
+              modified = true;
+              return { ...item, image: cleaned };
+            }
+          }
+          return item;
+        })
+      );
+
+      if (modified) {
+        this.items = updated;
+        this.save();
+        this.notify();
+      }
     } catch {}
   }
 

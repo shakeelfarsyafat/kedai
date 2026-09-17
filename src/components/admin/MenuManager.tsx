@@ -545,17 +545,17 @@ export const MenuManager: React.FC = () => {
                   /* Current Image Preview with change/delete actions */
                   <div className="p-3 bg-[#080e12] border border-[#1c3340] rounded-2xl flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-900 border border-[#1c3340] shrink-0 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-xl overflow-hidden bg-gradient-to-b from-[#075f7e] via-[#157e9f] to-[#bde5f0] border border-[#1c3340] shrink-0 flex items-center justify-center p-1 shadow-inner">
                         <img
                           src={image}
                           alt="Pratinjau foto menu"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain drop-shadow"
                         />
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs font-bold text-white flex items-center gap-1.5">
                           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                          Foto Siap Disimpan
+                          Foto Siap (Tanpa Background Putih)
                         </p>
                         {compressionInfo ? (
                           <p className="text-[11px] text-cyan-300 mt-0.5">
@@ -566,11 +566,11 @@ export const MenuManager: React.FC = () => {
                           </p>
                         ) : (
                           <p className="text-[10px] text-slate-400 mt-0.5 truncate">
-                            Foto aktif telah terpasang
+                            Background putih otomatis dibersihkan & transparan
                           </p>
                         )}
-                        <p className="text-[10px] text-slate-400">
-                          Format dioptimasi otomatis untuk web
+                        <p className="text-[10px] text-emerald-400 font-medium">
+                          ✓ Format transparan dioptimasi untuk web
                         </p>
                       </div>
                     </div>
@@ -609,7 +609,7 @@ export const MenuManager: React.FC = () => {
                       <div className="flex flex-col items-center gap-2 py-2">
                         <Loader2 className="w-7 h-7 text-cyan-400 animate-spin" />
                         <p className="text-xs font-semibold text-slate-300">
-                          Mengonversi & mengompres ukuran foto...
+                          Mengonversi, memotong background putih & mengompres ukuran foto...
                         </p>
                       </div>
                     ) : (
@@ -622,10 +622,10 @@ export const MenuManager: React.FC = () => {
                             Klik atau drag & drop foto ke sini
                           </p>
                           <p className="text-[11px] text-slate-400 mt-0.5">
-                            Format yang didukung: <span className="text-cyan-300 font-semibold">JPG, JPEG, PNG</span>
+                            Format: <span className="text-cyan-300 font-semibold">JPG, JPEG, PNG, WebP</span>
                           </p>
-                          <p className="text-[10px] text-slate-500 mt-1">
-                            Ukuran foto bebas — otomatis dikompres ke ukuran kecil & ringan
+                          <p className="text-[10px] text-emerald-400/90 font-medium mt-1">
+                            ✓ Otomatis hilangkan background putih & transparan (ukuran kecil)
                           </p>
                         </div>
                       </>

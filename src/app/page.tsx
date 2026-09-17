@@ -183,7 +183,13 @@ export default function CustomerPortalPage() {
   // Filter menu items
   const filteredItems = menuItems.filter((item) => {
     const matchesCategory =
-      selectedCategory === 'all' || item.category === selectedCategory;
+      selectedCategory === 'all' ||
+      item.category === selectedCategory ||
+      (selectedCategory === 'side-dish' && (item.category === 'snacks' || item.category === 'side-dish')) ||
+      (selectedCategory === 'snacks' && (item.category === 'side-dish' || item.category === 'snacks')) ||
+      (selectedCategory === 'main-dish' && (item.category === 'toast' || item.category === 'main-dish')) ||
+      (selectedCategory === 'toast' && (item.category === 'main-dish' || item.category === 'toast')) ||
+      (selectedCategory === 'dessert' && item.category === 'dessert');
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||

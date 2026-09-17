@@ -7,14 +7,16 @@ export type CategoryId =
   | 'macchiato'
   | 'milk-series'
   | 'tea-series'
+  | 'manual-brew'
+  | 'cold-brew'
   | 'lokale-in-250'
   | 'lokale-in-1l'
   | 'pastry'
+  | 'toast'
   | 'main-dish'
   | 'side-dish'
-  | 'manual-brew'
-  | 'cold-brew'
   | 'snacks'
+  | 'dessert'
   | (string & {});
 
 export interface Category {

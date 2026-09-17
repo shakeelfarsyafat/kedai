@@ -1,6 +1,7 @@
 /**
- * Image Compression Utility for Menu Product Photos
- * Converts any JPG, JPEG, or PNG into an optimized lightweight Base64 Data URL.
+ * Image Compression & Transparency Utility for Menu Product Photos
+ * Converts JPG, JPEG, or PNG into an optimized lightweight Base64 Data URL
+ * with transparency preserved and automatic outer white background removal.
  */
 
 export interface CompressionResult {
@@ -21,22 +22,131 @@ export function formatBytes(bytes: number, decimals = 1): string {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
 
+/**
+ * Detect and remove solid/near-white outer background from canvas using BFS flood-fill from borders.
+ * Leaves the subject (plates, cups, food) completely untouched.
+ */
+function removeOuterWhiteBackground(canvas: HTMLCanvasElement): boolean {
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return false;
+
+  const w = canvas.width;
+  const h = canvas.height;
+  const imgData = ctx.getImageData(0, 0, w, h);
+  const data = imgData.data;
+
+  // Check if pixel is near-white (threshold > 232 to catch compression artifacts)
+  const isNearWhite = (idx: number) => {
+    return (
+      data[idx + 3] > 10 && // has opacity
+      data[idx] >= 230 &&
+      data[idx + 1] >= 230 &&
+      data[idx + 2] >= 230
+    );
+  };
+
+  // Check the four corners
+  const cornerIndices = [
+    0, // top-left
+    (w - 1) * 4, // top-right
+    (h - 1) * w * 4, // bottom-left
+    ((h - 1) * w + (w - 1)) * 4, // bottom-right
+  ];
+  const whiteCornersCount = cornerIndices.filter(isNearWhite).length;
+
+  // If corners are not predominantly white, no need to strip background
+  if (whiteCornersCount < 2) {
+    return false;
+  }
+
+  const visited = new Uint8Array(w * h);
+  const queue: number[] = [];
+
+  // Enqueue white border pixels from all 4 edges
+  for (let x = 0; x < w; x++) {
+    const topIdx = x * 4;
+    if (isNearWhite(topIdx)) {
+      visited[x] = 1;
+      queue.push(x, 0);
+    }
+    const bottomPos = (h - 1) * w + x;
+    const bottomIdx = bottomPos * 4;
+    if (isNearWhite(bottomIdx)) {
+      visited[bottomPos] = 1;
+      queue.push(x, h - 1);
+    }
+  }
+
+  for (let y = 0; y < h; y++) {
+    const leftPos = y * w;
+    const leftIdx = leftPos * 4;
+    if (isNearWhite(leftIdx) && !visited[leftPos]) {
+      visited[leftPos] = 1;
+      queue.push(0, y);
+    }
+    const rightPos = y * w + (w - 1);
+    const rightIdx = rightPos * 4;
+    if (isNearWhite(rightIdx) && !visited[rightPos]) {
+      visited[rightPos] = 1;
+      queue.push(w - 1, y);
+    }
+  }
+
+  // BFS flood-fill to turn connected outer background pixels transparent
+  let head = 0;
+  while (head < queue.length) {
+    const cx = queue[head++];
+    const cy = queue[head++];
+    const pIdx = (cy * w + cx) * 4;
+
+    // Set alpha to 0 (completely transparent)
+    data[pIdx + 3] = 0;
+
+    // Check 4-connected neighbors
+    const neighbors: [number, number][] = [
+      [cx + 1, cy],
+      [cx - 1, cy],
+      [cx, cy + 1],
+      [cx, cy - 1],
+    ];
+
+    for (let i = 0; i < 4; i++) {
+      const nx = neighbors[i][0];
+      const ny = neighbors[i][1];
+      if (nx >= 0 && nx < w && ny >= 0 && ny < h) {
+        const nPos = ny * w + nx;
+        if (!visited[nPos]) {
+          visited[nPos] = 1;
+          const nIdx = nPos * 4;
+          if (isNearWhite(nIdx)) {
+            queue.push(nx, ny);
+          }
+        }
+      }
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+  return true;
+}
+
 export async function compressMenuImage(
   file: File,
   options: {
     maxDimension?: number;
     quality?: number;
+    removeWhiteBg?: boolean;
   } = {}
 ): Promise<CompressionResult> {
-  const { maxDimension = 800, quality = 0.82 } = options;
+  const { maxDimension = 700, quality = 0.85, removeWhiteBg = true } = options;
 
   // Validate format strictly to JPG, JPEG, and PNG
-  const validExtensions = ['jpg', 'jpeg', 'png'];
+  const validExtensions = ['jpg', 'jpeg', 'png', 'webp'];
   const fileExt = file.name.split('.').pop()?.toLowerCase() || '';
-  const validMimes = ['image/jpeg', 'image/jpg', 'image/png'];
+  const validMimes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
   if (!validExtensions.includes(fileExt) && !validMimes.includes(file.type)) {
-    throw new Error('Hanya file foto berformat JPG, JPEG, atau PNG yang diizinkan.');
+    throw new Error('Hanya file foto berformat JPG, JPEG, PNG, atau WebP yang diizinkan.');
   }
 
   return new Promise((resolve, reject) => {
@@ -77,34 +187,19 @@ export async function compressMenuImage(
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
 
-        // Fill transparent areas with clean white if converting to JPEG
-        if (file.type === 'image/png') {
-          // Check if user wants PNG or if we can preserve transparency
-          ctx.drawImage(img, 0, 0, width, height);
-        } else {
-          ctx.fillStyle = '#ffffff';
-          ctx.fillRect(0, 0, width, height);
-          ctx.drawImage(img, 0, 0, width, height);
+        // Draw image directly onto canvas (NO white fill background!)
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Remove outer white/near-white background so food sits cleanly on card
+        if (removeWhiteBg) {
+          removeOuterWhiteBackground(canvas);
         }
 
-        // Export as optimized JPEG unless PNG with transparency
-        const outputMime = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-        let compressedDataUrl = canvas.toDataURL(outputMime, quality);
-
-        // If PNG turned out larger than 300KB, fallback to high quality JPEG for compactness
-        const approxSize = Math.round((compressedDataUrl.length * 3) / 4);
-        if (outputMime === 'image/png' && approxSize > 250 * 1024) {
-          // Flatten onto white background
-          const jpgCanvas = document.createElement('canvas');
-          jpgCanvas.width = width;
-          jpgCanvas.height = height;
-          const jpgCtx = jpgCanvas.getContext('2d');
-          if (jpgCtx) {
-            jpgCtx.fillStyle = '#ffffff';
-            jpgCtx.fillRect(0, 0, width, height);
-            jpgCtx.drawImage(canvas, 0, 0);
-            compressedDataUrl = jpgCanvas.toDataURL('image/jpeg', quality);
-          }
+        // Export as WebP with alpha transparency (or PNG fallback)
+        let compressedDataUrl = canvas.toDataURL('image/webp', quality);
+        if (!compressedDataUrl.startsWith('data:image/webp')) {
+          // If browser doesn't support toDataURL webp, use PNG
+          compressedDataUrl = canvas.toDataURL('image/png');
         }
 
         const finalBytes = Math.round((compressedDataUrl.length * 3) / 4);
@@ -125,5 +220,42 @@ export async function compressMenuImage(
     };
 
     reader.readAsDataURL(file);
+  });
+}
+
+/**
+ * Strips outer white background from any existing Base64 Data URL.
+ */
+export function stripWhiteBackgroundFromDataUrl(dataUrl: string): Promise<string> {
+  return new Promise((resolve) => {
+    if (!dataUrl || !dataUrl.startsWith('data:image')) {
+      resolve(dataUrl);
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        resolve(dataUrl);
+        return;
+      }
+      ctx.drawImage(img, 0, 0);
+      const changed = removeOuterWhiteBackground(canvas);
+      if (changed) {
+        let cleaned = canvas.toDataURL('image/webp', 0.88);
+        if (!cleaned.startsWith('data:image/webp')) {
+          cleaned = canvas.toDataURL('image/png');
+        }
+        resolve(cleaned);
+      } else {
+        resolve(dataUrl);
+      }
+    };
+    img.onerror = () => resolve(dataUrl);
+    img.src = dataUrl;
   });
 }

@@ -44,22 +44,40 @@ export const CATEGORIES: Category[] = [
     description: 'Teh seduh segar yang menenangkan dan menyegarkan',
   },
   {
+    id: 'manual-brew',
+    name: 'Manual Brew (V60)',
+    icon: 'Flame',
+    description: 'Seduhan biji kopi single origin dengan teknik manual filter',
+  },
+  {
+    id: 'cold-brew',
+    name: 'Cold Brew',
+    icon: 'Sparkles',
+    description: 'Kopi seduh dingin selama 16 jam dengan rasa lembut dan manis alami',
+  },
+  {
     id: 'lokale-in-250',
-    name: 'lokale-IN 250ml',
+    name: 'Brew Bean IN 250ml',
     icon: 'Coffee',
     description: 'Kemasan botol praktis 250ml siap bawa',
   },
   {
     id: 'lokale-in-1l',
-    name: 'lokale-IN 1 Liter',
+    name: 'Brew Bean IN 1 Liter',
     icon: 'Coffee',
     description: 'Ukuran 1 liter pas dinikmati bersama teman atau keluarga',
   },
   {
     id: 'pastry',
-    name: 'Pastry',
+    name: 'Pastry & Bakery',
     icon: 'Croissant',
-    description: 'Kue dan pastry freshly baked setiap pagi',
+    description: 'Kue dan pastry freshly baked setiap pagi (Croissant, Roll, dll)',
+  },
+  {
+    id: 'toast',
+    name: 'Toast & Sandwich',
+    icon: 'Utensils',
+    description: 'Roti panggang sourdough melt dan aneka sandwich lezat',
   },
   {
     id: 'main-dish',
@@ -69,9 +87,15 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'side-dish',
-    name: 'Side Dish',
+    name: 'Side Dish & Snacks',
     icon: 'Utensils',
-    description: 'Camilan renyah gurih pelengkap nongkrong',
+    description: 'Camilan renyah gurih pelengkap nongkrong (Fries, Pisang Goreng, dll)',
+  },
+  {
+    id: 'dessert',
+    name: 'Dessert & Sweet',
+    icon: 'Sparkles',
+    description: 'Hidangan penutup manis pelepas dahaga dan peneman santai',
   },
 ];
 
