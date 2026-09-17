@@ -293,6 +293,7 @@ export default function AdminDashboardPage() {
             orders={orders}
             onUpdatePaymentStatus={handleUpdatePaymentStatus}
             onSimulateTestOrder={handleSimulateNewOrder}
+            onClearAllOrders={() => orderStore.clearAllOrders()}
             baristaName={currentUser?.name || 'Barista Shift A'}
           />
         )}

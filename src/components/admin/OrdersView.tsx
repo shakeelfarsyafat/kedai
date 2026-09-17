@@ -15,12 +15,14 @@ import {
   PlusCircle,
   DollarSign,
   Receipt,
+  Trash2,
 } from 'lucide-react';
 
 interface OrdersViewProps {
   orders: Order[];
   onUpdatePaymentStatus: (orderId: string, status: PaymentStatus) => void;
   onSimulateTestOrder: () => void;
+  onClearAllOrders?: () => void;
   baristaName?: string;
 }
 
@@ -28,6 +30,8 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
   orders,
   onUpdatePaymentStatus,
   onSimulateTestOrder,
+  onClearAllOrders,
+
   baristaName = 'Barista Shift A',
 }) => {
   const [paymentFilter, setPaymentFilter] = useState<'all' | 'paid' | 'pending'>('all');
@@ -208,6 +212,25 @@ export const OrdersView: React.FC<OrdersViewProps> = ({
             <PlusCircle className="w-4 h-4" />
             <span className="hidden sm:inline">+ Simulasi Order</span>
           </button>
+
+          {orders.length > 0 && onClearAllOrders && (
+            <button
+              onClick={() => {
+                if (
+                  confirm(
+                    'Apakah Anda yakin ingin menghapus SEMUA pesanan? Semua riwayat dan antrean pesanan saat ini akan dikosongkan.'
+                  )
+                ) {
+                  onClearAllOrders();
+                }
+              }}
+              className="flex items-center gap-1.5 px-3 py-2 bg-rose-950/40 hover:bg-rose-900/50 text-rose-400 hover:text-rose-300 border border-rose-800/40 rounded-xl text-xs font-bold transition-all shrink-0"
+              title="Hapus Semua Pesanan"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Hapus Semua</span>
+            </button>
+          )}
         </div>
       </div>
 

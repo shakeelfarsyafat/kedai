@@ -22,6 +22,10 @@ class OrderStore {
   private listeners: Set<OrderListener> = new Set();
   private notificationListeners: Set<NewOrderNotificationListener> = new Set();
   private isInitialized = false;
+  private pollInterval: NodeJS.Timeout | null = null;
+  private knownOrderIds: Set<string> = new Set();
+  private alertedOrderIds: Set<string> = new Set();
+  private isPollingActive = false;
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -33,24 +37,40 @@ class OrderStore {
     if (this.isInitialized) return;
     this.isInitialized = true;
 
-    // Load from localStorage or seed
+    // 1. Load from localStorage or initial
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       try {
-        this.orders = JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          this.orders = parsed;
+        } else {
+          this.orders = [...INITIAL_ORDERS];
+        }
       } catch {
         this.orders = [...INITIAL_ORDERS];
-        this.save();
       }
     } else {
       this.orders = [...INITIAL_ORDERS];
-      this.save();
     }
 
-    // Fetch from Neon PostgreSQL
-    this.fetchFromDb();
+    // Mark existing orders as known so they don't trigger sound on startup
+    this.orders.forEach((o) => {
+      this.knownOrderIds.add(o.id);
+      this.alertedOrderIds.add(o.id);
+    });
 
-    // Setup BroadcastChannel for instantaneous multi-tab sync
+    // 2. Initial fetch from Neon PostgreSQL
+    await this.fetchFromDbInitial();
+
+    // 3. Setup active polling loop for cross-device real-time sync (every 2 seconds)
+    if (!this.pollInterval) {
+      this.pollInterval = setInterval(() => {
+        this.pollFromDb();
+      }, 2000);
+    }
+
+    // 4. Setup BroadcastChannel for 0ms instantaneous multi-tab sync
     if (typeof BroadcastChannel !== 'undefined') {
       this.channel = new BroadcastChannel(CHANNEL_NAME);
       this.channel.onmessage = (event) => {
@@ -59,21 +79,25 @@ class OrderStore {
 
         if (data.type === 'NEW_ORDER') {
           const incoming: Order = data.order;
-          if (!this.orders.find((o) => o.id === incoming.id)) {
-            this.orders = [incoming, ...this.orders];
+          if (!this.knownOrderIds.has(incoming.id)) {
+            this.knownOrderIds.add(incoming.id);
+            this.orders = [incoming, ...this.orders.filter((o) => o.id !== incoming.id)];
             this.saveLocalOnly();
             this.notifyListeners();
           }
 
-          soundEngine.playNewOrderChime();
-          this.notifyNotificationListeners({
-            orderId: incoming.id,
-            customerName: incoming.customerName,
-            total: incoming.total,
-            type: incoming.orderType,
-            tableNumber: incoming.tableNumber,
-            timestamp: incoming.createdAt,
-          });
+          if (!this.alertedOrderIds.has(incoming.id)) {
+            this.alertedOrderIds.add(incoming.id);
+            soundEngine.playNewOrderChime();
+            this.notifyNotificationListeners({
+              orderId: incoming.id,
+              customerName: incoming.customerName,
+              total: incoming.total,
+              type: incoming.orderType,
+              tableNumber: incoming.tableNumber,
+              timestamp: incoming.createdAt,
+            });
+          }
         } else if (data.type === 'STATUS_CHANGE') {
           const { orderId, status } = data;
           this.orders = this.orders.map((o) =>
@@ -89,6 +113,12 @@ class OrderStore {
           );
           this.saveLocalOnly();
           this.notifyListeners();
+        } else if (data.type === 'CLEAR_ORDERS') {
+          this.orders = [];
+          this.knownOrderIds.clear();
+          this.alertedOrderIds.clear();
+          this.saveLocalOnly();
+          this.notifyListeners();
         } else if (data.type === 'RESET_ORDERS') {
           this.orders = [...INITIAL_ORDERS];
           this.saveLocalOnly();
@@ -97,28 +127,115 @@ class OrderStore {
       };
     }
 
-    // Cross-tab fallback
+    // Cross-tab storage fallback
     window.addEventListener('storage', (e) => {
-      if (e.key === STORAGE_KEY && e.newValue) {
-        try {
-          this.orders = JSON.parse(e.newValue);
+      if (e.key === STORAGE_KEY) {
+        if (e.newValue) {
+          try {
+            this.orders = JSON.parse(e.newValue);
+            this.orders.forEach((o) => this.knownOrderIds.add(o.id));
+            this.notifyListeners();
+          } catch {}
+        } else {
+          this.orders = [];
+          this.knownOrderIds.clear();
           this.notifyListeners();
-        } catch {}
+        }
       }
     });
   }
 
-  private async fetchFromDb() {
+  private async fetchFromDbInitial() {
     try {
       const res = await fetch('/api/orders');
       const data = await res.json();
-      if (data.success && Array.isArray(data.orders) && data.orders.length > 0) {
+      if (data.success && Array.isArray(data.orders)) {
         this.orders = data.orders;
+        this.knownOrderIds.clear();
+        this.alertedOrderIds.clear();
+        this.orders.forEach((o) => {
+          this.knownOrderIds.add(o.id);
+          this.alertedOrderIds.add(o.id);
+        });
         this.saveLocalOnly();
         this.notifyListeners();
       }
     } catch {
-      // Fallback to local
+      // Offline fallback
+    }
+  }
+
+  private async pollFromDb() {
+    if (this.isPollingActive) return;
+    this.isPollingActive = true;
+
+    try {
+      const res = await fetch('/api/orders', { cache: 'no-store' });
+      const data = await res.json();
+
+      if (data.success && Array.isArray(data.orders)) {
+        const serverOrders: Order[] = data.orders;
+        const brandNewOrders: Order[] = [];
+        let hasChanges = false;
+
+        // Check for new incoming orders placed on other devices / browsers
+        for (const serverOrder of serverOrders) {
+          if (!this.knownOrderIds.has(serverOrder.id)) {
+            this.knownOrderIds.add(serverOrder.id);
+            brandNewOrders.push(serverOrder);
+          }
+        }
+
+        // Check if existing orders had their status or paymentStatus updated
+        const updatedOrdersMap = new Map<string, Order>();
+        serverOrders.forEach((o) => updatedOrdersMap.set(o.id, o));
+
+        const mergedOrders = this.orders.map((localOrder) => {
+          const remote = updatedOrdersMap.get(localOrder.id);
+          if (remote) {
+            if (
+              remote.status !== localOrder.status ||
+              remote.paymentStatus !== localOrder.paymentStatus
+            ) {
+              hasChanges = true;
+              return { ...localOrder, status: remote.status, paymentStatus: remote.paymentStatus };
+            }
+          }
+          return localOrder;
+        });
+
+        if (brandNewOrders.length > 0) {
+          hasChanges = true;
+          this.orders = [...brandNewOrders, ...mergedOrders];
+
+          // Trigger audio chime and toast alert for brand new orders
+          for (const newOrd of brandNewOrders) {
+            if (!this.alertedOrderIds.has(newOrd.id)) {
+              this.alertedOrderIds.add(newOrd.id);
+              soundEngine.playNewOrderChime();
+              this.notifyNotificationListeners({
+                orderId: newOrd.id,
+                customerName: newOrd.customerName,
+                total: newOrd.total,
+                type: newOrd.orderType,
+                tableNumber: newOrd.tableNumber,
+                timestamp: newOrd.createdAt,
+              });
+            }
+          }
+        } else if (hasChanges) {
+          this.orders = mergedOrders;
+        }
+
+        if (hasChanges) {
+          this.saveLocalOnly();
+          this.notifyListeners();
+        }
+      }
+    } catch {
+      // Network/polling error, continue quietly
+    } finally {
+      this.isPollingActive = false;
     }
   }
 
@@ -160,6 +277,8 @@ class OrderStore {
       updatedAt: new Date().toISOString(),
     };
 
+    this.knownOrderIds.add(newOrder.id);
+    this.alertedOrderIds.add(newOrder.id);
     this.orders = [newOrder, ...this.orders];
     this.save();
     this.notifyListeners();
@@ -261,6 +380,35 @@ class OrderStore {
     }
 
     return true;
+  }
+
+  /**
+   * Clears ALL orders across DB, localStorage, and triggers real-time broadcast
+   */
+  public async clearAllOrders(): Promise<void> {
+    this.orders = [];
+    this.knownOrderIds.clear();
+    this.alertedOrderIds.clear();
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch {}
+    }
+
+    this.notifyListeners();
+
+    // Broadcast clear event to all active dashboard tabs
+    if (this.channel) {
+      this.channel.postMessage({ type: 'CLEAR_ORDERS' });
+    }
+
+    // Call server to truncate DB orders table
+    try {
+      await fetch('/api/orders', { method: 'DELETE' });
+    } catch (e) {
+      console.error('Failed to clear orders from DB:', e);
+    }
   }
 
   public resetToDefault(): void {

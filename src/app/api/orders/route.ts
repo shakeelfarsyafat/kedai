@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getDbOrders, insertDbOrder } from '@/lib/db';
+import { getDbOrders, insertDbOrder, clearAllDbOrders } from '@/lib/db';
 import { Order } from '@/types/coffee';
 
 export async function GET() {
@@ -26,3 +26,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE() {
+  try {
+    await clearAllDbOrders();
+    return NextResponse.json({ success: true, message: 'Semua pesanan berhasil dihapus' });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
+}
+

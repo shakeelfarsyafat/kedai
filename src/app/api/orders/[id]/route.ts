@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { updateDbOrderStatus } from '@/lib/db';
+import { updateDbOrder } from '@/lib/db';
 
 export async function PATCH(
   request: Request,
@@ -8,9 +8,13 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    await updateDbOrderStatus(id, body.status);
+    await updateDbOrder(id, {
+      status: body.status,
+      paymentStatus: body.paymentStatus,
+    });
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+

@@ -238,3 +238,35 @@ export async function updateDbOrderStatus(id: string, status: OrderStatus) {
     WHERE id = ${id};
   `;
 }
+
+export async function updateDbOrder(
+  id: string,
+  updates: { status?: OrderStatus; paymentStatus?: 'paid' | 'pending' }
+) {
+  await initDatabase();
+  if (updates.status && updates.paymentStatus) {
+    await sql`
+      UPDATE orders 
+      SET status = ${updates.status}, payment_status = ${updates.paymentStatus}, updated_at = NOW() 
+      WHERE id = ${id};
+    `;
+  } else if (updates.status) {
+    await sql`
+      UPDATE orders 
+      SET status = ${updates.status}, updated_at = NOW() 
+      WHERE id = ${id};
+    `;
+  } else if (updates.paymentStatus) {
+    await sql`
+      UPDATE orders 
+      SET payment_status = ${updates.paymentStatus}, updated_at = NOW() 
+      WHERE id = ${id};
+    `;
+  }
+}
+
+export async function clearAllDbOrders() {
+  await initDatabase();
+  await sql`TRUNCATE TABLE orders;`;
+}
+

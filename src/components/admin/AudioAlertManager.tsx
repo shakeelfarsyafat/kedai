@@ -10,8 +10,29 @@ export const AudioAlertManager: React.FC = () => {
   const [audioState, setAudioState] = useState<string>('uninitialized');
 
   useEffect(() => {
-    setIsMuted(soundEngine.getIsMuted());
-    setAudioState(soundEngine.getAudioContextState());
+    const syncState = () => {
+      setIsMuted(soundEngine.getIsMuted());
+      const state = soundEngine.getAudioContextState();
+      setAudioState(state);
+      if (state === 'running') {
+        setHasInteracted(true);
+      }
+    };
+
+    syncState();
+    const interval = setInterval(syncState, 1500);
+
+    const onUserAction = () => {
+      setTimeout(syncState, 300);
+    };
+    window.addEventListener('click', onUserAction);
+    window.addEventListener('touchstart', onUserAction);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('click', onUserAction);
+      window.removeEventListener('touchstart', onUserAction);
+    };
   }, []);
 
   const handleEnableAudio = async () => {
