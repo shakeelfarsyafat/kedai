@@ -1,4 +1,21 @@
-export type CategoryId = 'all' | 'espresso' | 'manual-brew' | 'cold-brew' | 'pastry' | 'snacks';
+export type CategoryId =
+  | 'all'
+  | 'coffee'
+  | 'espresso'
+  | 'fusion-coffee'
+  | 'milk-tea'
+  | 'macchiato'
+  | 'milk-series'
+  | 'tea-series'
+  | 'lokale-in-250'
+  | 'lokale-in-1l'
+  | 'pastry'
+  | 'main-dish'
+  | 'side-dish'
+  | 'manual-brew'
+  | 'cold-brew'
+  | 'snacks'
+  | (string & {});
 
 export interface Category {
   id: CategoryId;

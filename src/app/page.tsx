@@ -196,7 +196,7 @@ export default function CustomerPortalPage() {
   const totalCartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="min-h-screen bg-[#120c08] text-stone-100 flex flex-col selection:bg-amber-600 selection:text-white pb-24 sm:pb-12">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col selection:bg-[#007b9e] selection:text-white pb-24 sm:pb-12">
       {/* Header */}
       <Header
         orderType={orderType}
@@ -210,118 +210,138 @@ export default function CustomerPortalPage() {
         activeOrderId={activeOrderId}
       />
 
-      {/* Hero Welcome Banner */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-[#1f140e] via-[#170e09] to-[#120c08] border-b border-amber-900/20 py-8 sm:py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-semibold mb-3">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Fresh Roastery & Artisan Slow Bar</span>
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-              Nikmati Racikan Kopi Pilihan & Sensasi Cita Rasa Terbaik.
-            </h1>
-            <p className="mt-2.5 text-xs sm:text-sm text-stone-400 font-light leading-relaxed">
-              Pesan langsung dari meja Anda tanpa perlu antre di kasir. Kustomisasi tingkat gula, es,
-              dan pilihan susu sesuai selera Anda.
-            </p>
+      {/* Hero Welcome Banner with Floating Coffee Cups Overflowing Out of the Box */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-4 sm:pb-6 w-full">
+        <div className="relative rounded-3xl sm:rounded-[36px] bg-gradient-to-r from-[#086a87] via-[#0d85a8] via-50% to-[#50abc3] px-6 sm:px-12 lg:px-14 py-8 sm:py-12 lg:py-14 overflow-visible shadow-md shadow-cyan-950/10">
+          {/* Subtle atmospheric cloud texture inside the banner */}
+          <div className="absolute inset-0 rounded-3xl sm:rounded-[36px] overflow-hidden pointer-events-none opacity-40">
+            <div className="absolute -top-12 -left-12 w-64 h-64 bg-white/20 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 -right-10 w-80 h-80 bg-white/25 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-white/15 to-transparent" />
+          </div>
 
-            {/* Quick Highlights */}
-            <div className="mt-5 flex flex-wrap gap-4 text-xs text-stone-300 font-medium">
-              <div className="flex items-center gap-1.5 text-amber-300/90">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <span>100% Single Origin Arabika</span>
+          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 sm:gap-10">
+            {/* Left Big Typography */}
+            <div className="max-w-xl text-center md:text-left">
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.12] tracking-tight drop-shadow-sm">
+                Temukan
+                <br />
+                Teman Harimu.
+              </h1>
+            </div>
+
+            {/* Right: Floating Coffee Cups Pop Out Above The Box */}
+            <div className="relative w-full max-w-[280px] sm:max-w-[340px] md:max-w-[390px] h-48 sm:h-56 md:h-64 flex items-end justify-center pointer-events-none">
+              {/* Cup 1: Iced Latte (Poking out of the top boundary with float animation) */}
+              <div className="absolute left-2 sm:left-4 bottom-1 z-20 flex flex-col items-center">
+                <div className="relative -top-9 sm:-top-14 md:-top-18 animate-hero-cup-1">
+                  <img
+                    src="/images/hero-latte.png"
+                    alt="Floating Iced Latte"
+                    className="w-36 sm:w-46 md:w-52 h-auto object-contain drop-shadow-[0_20px_25px_rgba(0,0,0,0.32)]"
+                  />
+                  {/* Soft realistic floating shadow underneath */}
+                  <div className="w-24 sm:w-32 h-3.5 sm:h-4.5 bg-black/25 rounded-full blur-md mx-auto -mt-2 animate-shadow-1" />
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 text-amber-300/90">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <span>Pilihan Oat & Almond Milk</span>
-              </div>
-              <div className="flex items-center gap-1.5 text-amber-300/90">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <span>Live Barista Tracking</span>
+
+              {/* Cup 2: Iced Matcha Macchiato */}
+              <div className="absolute right-2 sm:right-4 bottom-2 z-10 flex flex-col items-center">
+                <div className="relative -top-2 sm:-top-5 md:-top-7 animate-hero-cup-2">
+                  <img
+                    src="/images/hero-matcha.png"
+                    alt="Floating Iced Matcha Macchiato"
+                    className="w-32 sm:w-42 md:w-48 h-auto object-contain drop-shadow-[0_18px_22px_rgba(0,0,0,0.25)]"
+                  />
+                  {/* Soft realistic floating shadow underneath */}
+                  <div className="w-20 sm:w-28 h-3 sm:h-4 bg-black/20 rounded-full blur-md mx-auto -mt-2 animate-shadow-2" />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Main Catalog Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex-1 w-full space-y-6">
-        {/* Search & Category Pills Controls */}
-        <div className="space-y-4">
-          {/* Search bar */}
-          <div className="relative max-w-md">
-            <Search className="absolute left-3.5 top-3 w-4 h-4 text-stone-500" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Cari kopi, manual brew, croissant, tasting notes..."
-              className="w-full bg-[#1b120c] border border-stone-800 rounded-2xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all shadow-inner"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-2.5 text-xs text-stone-400 hover:text-white"
-              >
-                Reset
-              </button>
+      {/* Main Catalog Section */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 sm:py-4 flex-1 w-full space-y-6">
+        {/* Sub-header Bar: Subtitle on Left, Search Bar on Right */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-2">
+          <p className="text-xs sm:text-sm font-medium text-slate-600">
+            Temukan menu favorit untuk melengkapi aktivitasmu hari ini.
+          </p>
+
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <div className="relative flex-1 sm:w-64">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Cari produk..."
+                className="w-full bg-white border border-slate-200 rounded-full pl-4 pr-9 py-2 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#007b9e] focus:border-transparent transition-all shadow-sm"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-2.5 text-xs text-slate-400 hover:text-slate-600"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            <button
+              type="button"
+              className="px-5 py-2 rounded-full bg-[#007b9e] hover:bg-[#006e8d] text-white text-xs sm:text-sm font-bold shadow-sm shadow-cyan-900/10 transition-all shrink-0"
+            >
+              Search
+            </button>
+          </div>
+        </div>
+
+        {/* 2-Column Layout: Sidebar Categories on Left, Grid Cards on Right */}
+        <div className="flex flex-col md:flex-row gap-6 lg:gap-8 items-start">
+          {/* Left Category Sidebar */}
+          <aside className="w-full md:w-48 lg:w-56 shrink-0 bg-white rounded-3xl p-3.5 sm:p-4 border border-slate-100 shadow-sm md:sticky md:top-24">
+            <h2 className="text-[11px] font-bold text-slate-400 tracking-wider uppercase mb-3 px-3">
+              KATEGORI
+            </h2>
+            <div className="flex md:flex-col gap-1 overflow-x-auto md:overflow-visible pb-1 md:pb-0 scrollbar-none">
+              {CATEGORIES.map((cat) => {
+                const isActive = selectedCategory === cat.id;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`w-full text-left px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                      isActive
+                        ? 'bg-[#007b9e] text-white shadow-sm shadow-cyan-900/20'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
+
+          {/* Right Product Grid */}
+          <div className="flex-1 min-w-0 w-full">
+            {filteredItems.length === 0 ? (
+              <div className="py-16 text-center bg-white rounded-3xl border border-slate-100 p-8 shadow-sm">
+                <Coffee className="w-12 h-12 mx-auto text-slate-300 mb-3" />
+                <h3 className="text-base font-bold text-slate-700">Menu Tidak Ditemukan</h3>
+                <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+                  Tidak ada menu yang sesuai dengan kata kunci "{searchQuery}".
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+                {filteredItems.map((item) => (
+                  <MenuCard key={item.id} item={item} onSelect={handleSelectItem} />
+                ))}
+              </div>
             )}
           </div>
-
-          {/* Category Tabs / Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            {CATEGORIES.map((cat) => {
-              const isActive = selectedCategory === cat.id;
-              return (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all duration-200 border ${
-                    isActive
-                      ? 'bg-amber-600 border-amber-500 text-white shadow-lg shadow-amber-950/50 scale-102'
-                      : 'bg-[#1b120c] border-stone-800/90 text-stone-400 hover:text-stone-200 hover:border-stone-700'
-                  }`}
-                >
-                  <span className={isActive ? 'text-white' : 'text-amber-500'}>
-                    {getCategoryIcon(cat.id)}
-                  </span>
-                  <span>{cat.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Menu Grid */}
-        <div>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm sm:text-base font-bold text-stone-200 flex items-center gap-2">
-              <span>
-                {CATEGORIES.find((c) => c.id === selectedCategory)?.name || 'Katalog Menu'}
-              </span>
-              <span className="text-xs font-normal text-stone-400">
-                ({filteredItems.length} menu tersedia)
-              </span>
-            </h2>
-          </div>
-
-          {filteredItems.length === 0 ? (
-            <div className="py-16 text-center bg-[#170e09] rounded-3xl border border-stone-800/80 p-8">
-              <Coffee className="w-12 h-12 mx-auto text-stone-600 mb-3" />
-              <h3 className="text-base font-bold text-stone-300">Menu Tidak Ditemukan</h3>
-              <p className="text-xs text-stone-500 mt-1 max-w-sm mx-auto">
-                Tidak ada menu yang sesuai dengan kata kunci "{searchQuery}". Coba kata kunci lain atau
-                pilih kategori berbeda.
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-              {filteredItems.map((item) => (
-                <MenuCard key={item.id} item={item} onSelect={handleSelectItem} />
-              ))}
-            </div>
-          )}
         </div>
       </main>
 
@@ -330,15 +350,15 @@ export default function CustomerPortalPage() {
         <div className="sm:hidden fixed bottom-4 inset-x-4 z-40">
           <button
             onClick={() => setIsCartOpen(true)}
-            className="w-full py-3.5 px-5 rounded-2xl bg-gradient-to-r from-amber-600 to-amber-700 text-white font-bold text-sm shadow-2xl shadow-amber-950 flex items-center justify-between animate-fadeIn"
+            className="w-full py-3.5 px-5 rounded-full bg-[#007b9e] text-white font-bold text-sm shadow-2xl shadow-cyan-900/40 flex items-center justify-between"
           >
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-black/30 flex items-center justify-center text-xs font-extrabold">
+              <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs font-extrabold">
                 {totalCartCount}
               </div>
               <span>Lihat Pesanan</span>
             </div>
-            <span className="text-amber-200 font-extrabold">{formatRupiah(cartSubtotal)}</span>
+            <span className="text-white font-extrabold">{formatRupiah(cartSubtotal)}</span>
           </button>
         </div>
       )}
@@ -373,3 +393,4 @@ export default function CustomerPortalPage() {
     </div>
   );
 }
+

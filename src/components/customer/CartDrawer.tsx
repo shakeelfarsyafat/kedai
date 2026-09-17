@@ -138,16 +138,16 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
         />
 
         <div className="fixed inset-y-0 right-0 max-w-full flex w-full sm:w-auto sm:pl-10">
-          <div className="w-full sm:w-screen sm:max-w-md bg-[#160e0a] border-l border-amber-900/40 shadow-2xl flex flex-col h-full">
+          <div className="w-full sm:w-screen sm:max-w-md bg-white border-l border-slate-200 shadow-2xl flex flex-col h-full">
             {/* Header */}
-            <div className="p-4 sm:p-5 bg-[#1f140e] border-b border-stone-800 flex items-center justify-between">
+            <div className="p-4 sm:p-5 bg-white border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-amber-600/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <div className="w-9 h-9 rounded-2xl bg-cyan-50 border border-cyan-200 flex items-center justify-center text-[#007b9e]">
                   <ShoppingBag className="w-4 h-4" />
                 </div>
                 <div>
-                  <h2 className="text-sm sm:text-base font-bold text-white">Keranjang Pesanan</h2>
-                  <p className="text-[11px] text-stone-400">
+                  <h2 className="text-sm sm:text-base font-bold text-slate-800">Keranjang Pesanan</h2>
+                  <p className="text-[11px] text-slate-500">
                     {orderType === 'dine_in' ? `Dine-in (${tableNumber})` : 'Takeaway (Bawa Pulang)'}
                   </p>
                 </div>
@@ -155,7 +155,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
               <button
                 onClick={onClose}
-                className="p-2 rounded-xl text-stone-400 hover:text-white hover:bg-stone-800 transition-colors"
+                className="p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -165,11 +165,11 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             <div className="flex-1 overflow-y-auto p-3.5 sm:p-5 space-y-2.5">
               {cart.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center p-6">
-                  <div className="w-16 h-16 rounded-full bg-stone-900 border border-stone-800 flex items-center justify-center text-stone-600 mb-3">
+                  <div className="w-16 h-16 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 mb-3">
                     <ShoppingBag className="w-8 h-8" />
                   </div>
-                  <h3 className="font-semibold text-stone-200 text-sm">Keranjang Masih Kosong</h3>
-                  <p className="text-xs text-stone-400 mt-1 max-w-xs">
+                  <h3 className="font-semibold text-slate-700 text-sm">Keranjang Masih Kosong</h3>
+                  <p className="text-xs text-slate-400 mt-1 max-w-xs">
                     Pilih menu kopi atau cemilan favorit Anda dan sesuaikan rasa sesuai selera.
                   </p>
                 </div>
@@ -179,12 +179,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                   return (
                     <div
                       key={item.id}
-                      className="p-3 rounded-2xl bg-[#20150f] border border-stone-800/90 flex flex-col gap-2 shadow-sm"
+                      className="p-3 rounded-2xl bg-white border border-slate-200 flex flex-col gap-2 shadow-sm"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1">
-                          <h4 className="font-bold text-xs sm:text-sm text-stone-100">{item.menuItem.name}</h4>
-                          <span className="text-xs font-bold text-amber-400">
+                          <h4 className="font-bold text-xs sm:text-sm text-slate-800">{item.menuItem.name}</h4>
+                          <span className="text-xs font-bold text-[#007b9e]">
                             {formatRupiah(item.totalPrice)}
                           </span>
 
@@ -193,7 +193,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                               {summaryTags.map((tag, idx) => (
                                 <span
                                   key={idx}
-                                  className="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] bg-amber-950/60 border border-amber-900/40 text-amber-300"
+                                  className="px-2 py-0.5 rounded text-[9px] sm:text-[10px] bg-cyan-50 border border-cyan-100 text-[#075f7e]"
                                 >
                                   {tag}
                                 </span>
@@ -202,7 +202,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                           )}
 
                           {item.customization.notes && (
-                            <p className="mt-0.5 text-[10px] text-stone-400 italic">
+                            <p className="mt-0.5 text-[10px] text-slate-500 italic">
                               "{item.customization.notes}"
                             </p>
                           )}
@@ -210,33 +210,33 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
                         <button
                           onClick={() => onRemoveItem(item.id)}
-                          className="p-1.5 text-stone-500 hover:text-red-400 hover:bg-stone-900 rounded-lg transition-colors"
+                          className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
                           title="Hapus"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
                       </div>
 
-                      <div className="flex items-center justify-between pt-1.5 border-t border-stone-800/60">
-                        <span className="text-[10px] text-stone-400">
+                      <div className="flex items-center justify-between pt-1.5 border-t border-slate-100">
+                        <span className="text-[10px] text-slate-500">
                           {formatRupiah(item.itemPrice)} / porsi
                         </span>
 
-                        <div className="flex items-center bg-stone-900 rounded-lg p-0.5 border border-stone-800">
+                        <div className="flex items-center bg-slate-50 rounded-full p-0.5 border border-slate-200">
                           <button
                             type="button"
                             onClick={() => onUpdateQuantity(item.id, -1)}
-                            className="w-6 h-6 rounded flex items-center justify-center text-stone-400 hover:text-white"
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="w-6 text-center text-xs font-bold text-white">
+                          <span className="w-6 text-center text-xs font-bold text-slate-800">
                             {item.quantity}
                           </span>
                           <button
                             type="button"
                             onClick={() => onUpdateQuantity(item.id, 1)}
-                            className="w-6 h-6 rounded flex items-center justify-center text-stone-400 hover:text-white"
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -252,12 +252,12 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             {cart.length > 0 && (
               <form
                 onSubmit={handleTriggerCheckout}
-                className="p-3.5 sm:p-4 bg-[#180f0a] border-t border-stone-800 space-y-3"
+                className="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 space-y-3"
               >
                 <div className="space-y-2">
                   <div>
-                    <label className="text-[10px] font-bold uppercase text-stone-400 block mb-1">
-                      Nama Pemesan <span className="text-amber-500">*</span>
+                    <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
+                      Nama Pemesan <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -265,13 +265,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
                       placeholder="Masukkan nama Anda (misal: Budi)"
-                      className="w-full bg-stone-900/90 border border-stone-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#007b9e]"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-[10px] font-bold uppercase text-stone-400 block mb-1">
+                      <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
                         No. HP (Opsional)
                       </label>
                       <input
@@ -279,22 +279,22 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                         value={customerPhone}
                         onChange={(e) => setCustomerPhone(e.target.value)}
                         placeholder="0812..."
-                        className="w-full bg-stone-900/90 border border-stone-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-amber-500"
+                        className="w-full bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#007b9e]"
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] font-bold uppercase text-stone-400 block mb-1">
+                      <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
                         Tipe Pesanan
                       </label>
-                      <div className="text-xs font-semibold py-1.5 px-2.5 rounded-xl bg-stone-900 border border-amber-900/30 text-amber-300 flex items-center gap-1">
+                      <div className="text-xs font-semibold py-1.5 px-2.5 rounded-xl bg-white border border-slate-200 text-[#075f7e] flex items-center gap-1 shadow-sm">
                         {orderType === 'dine_in' ? (
                           <>
-                            <UtensilsCrossed className="w-3 h-3" />
+                            <UtensilsCrossed className="w-3 h-3 text-[#007b9e]" />
                             <span>{tableNumber}</span>
                           </>
                         ) : (
                           <>
-                            <ShoppingBag className="w-3 h-3" />
+                            <ShoppingBag className="w-3 h-3 text-[#007b9e]" />
                             <span>Takeaway</span>
                           </>
                         )}
@@ -305,53 +305,53 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
                 {/* Payment Methods */}
                 <div>
-                  <label className="text-[10px] font-bold uppercase text-stone-400 block mb-1">
+                  <label className="text-[10px] font-bold uppercase text-slate-500 block mb-1">
                     Metode Pembayaran
                   </label>
                   <div className="grid grid-cols-3 gap-1.5">
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('qris')}
-                      className={`py-1.5 px-2 rounded-xl text-center border transition-all ${
+                      className={`py-2 px-2 rounded-xl text-center border transition-all ${
                         paymentMethod === 'qris'
-                          ? 'bg-amber-600/30 border-amber-500 text-amber-200'
-                          : 'bg-stone-900/70 border-stone-800 text-stone-400'
+                          ? 'bg-cyan-50 border-[#007b9e] text-[#007b9e] shadow-sm'
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
                       }`}
                     >
-                      <QrCode className="w-3.5 h-3.5 mx-auto mb-0.5 text-amber-400" />
+                      <QrCode className="w-3.5 h-3.5 mx-auto mb-0.5 text-[#007b9e]" />
                       <span className="text-[10px] font-bold block">QRIS</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('cash')}
-                      className={`py-1.5 px-2 rounded-xl text-center border transition-all ${
+                      className={`py-2 px-2 rounded-xl text-center border transition-all ${
                         paymentMethod === 'cash'
-                          ? 'bg-amber-600/30 border-amber-500 text-amber-200'
-                          : 'bg-stone-900/70 border-stone-800 text-stone-400'
+                          ? 'bg-cyan-50 border-[#007b9e] text-[#007b9e] shadow-sm'
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
                       }`}
                     >
-                      <Banknote className="w-3.5 h-3.5 mx-auto mb-0.5 text-emerald-400" />
+                      <Banknote className="w-3.5 h-3.5 mx-auto mb-0.5 text-emerald-600" />
                       <span className="text-[10px] font-bold block">Kasir</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setPaymentMethod('card')}
-                      className={`py-1.5 px-2 rounded-xl text-center border transition-all ${
+                      className={`py-2 px-2 rounded-xl text-center border transition-all ${
                         paymentMethod === 'card'
-                          ? 'bg-amber-600/30 border-amber-500 text-amber-200'
-                          : 'bg-stone-900/70 border-stone-800 text-stone-400'
+                          ? 'bg-cyan-50 border-[#007b9e] text-[#007b9e] shadow-sm'
+                          : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
                       }`}
                     >
-                      <CreditCard className="w-3.5 h-3.5 mx-auto mb-0.5 text-blue-400" />
+                      <CreditCard className="w-3.5 h-3.5 mx-auto mb-0.5 text-blue-600" />
                       <span className="text-[10px] font-bold block">Debit</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Price Breakdown */}
-                <div className="pt-2 border-t border-stone-800/80 space-y-1 text-xs text-stone-300">
+                <div className="pt-2 border-t border-slate-200 space-y-1 text-xs text-slate-600">
                   <div className="flex justify-between text-[11px]">
                     <span>Subtotal</span>
                     <span>{formatRupiah(subtotal)}</span>
@@ -360,9 +360,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                     <span>Pajak Restoran PB1 (10%)</span>
                     <span>{formatRupiah(tax)}</span>
                   </div>
-                  <div className="flex justify-between text-sm font-bold text-white pt-1 border-t border-stone-800">
+                  <div className="flex justify-between text-sm font-bold text-slate-800 pt-1 border-t border-slate-200">
                     <span>Total Bayar</span>
-                    <span className="text-amber-400">{formatRupiah(grandTotal)}</span>
+                    <span className="text-[#007b9e]">{formatRupiah(grandTotal)}</span>
                   </div>
                 </div>
 
@@ -370,7 +370,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-amber-950/60 flex items-center justify-center gap-2 transition-all active:scale-98 disabled:opacity-50"
+                  className="w-full py-3 px-4 rounded-full bg-[#007b9e] hover:bg-[#006a88] text-white font-bold text-xs sm:text-sm shadow-md shadow-cyan-900/20 flex items-center justify-center gap-2 transition-all active:scale-98 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <span>Memproses Pesanan...</span>
@@ -389,44 +389,44 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
 
       {/* QRIS Simulated Payment Dialog */}
       {showQrisModal && pendingOrderData && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
-          <div className="w-full max-w-xs sm:max-w-sm bg-[#1a120c] border border-amber-900/50 rounded-3xl p-5 sm:p-6 shadow-2xl text-center text-white">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
+          <div className="w-full max-w-xs sm:max-w-sm bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-2xl text-center text-slate-800">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs uppercase font-bold text-amber-400">Pembayaran QRIS</span>
+              <span className="text-xs uppercase font-bold text-[#007b9e]">Pembayaran QRIS</span>
               <button
                 onClick={() => setShowQrisModal(false)}
-                className="text-stone-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="bg-white p-3 rounded-2xl inline-block shadow-lg mb-2">
+            <div className="bg-slate-50 p-3 rounded-2xl inline-block border border-slate-200 shadow-sm mb-2">
               <svg
                 viewBox="0 0 100 100"
                 className="w-40 h-40 mx-auto"
                 shapeRendering="crispEdges"
               >
-                <path fill="#000" d="M0,0 h30 v30 h-30 z M10,10 h10 v10 h-10 z" />
-                <path fill="#000" d="M70,0 h30 v30 h-30 z M80,10 h10 v10 h-10 z" />
-                <path fill="#000" d="M0,70 h30 v30 h-30 z M10,80 h10 v10 h-10 z" />
-                <path fill="#000" d="M40,10 h10 v10 h-10 z M60,10 h5 v5 h-5 z M45,25 h15 v5 h-15 z" />
-                <path fill="#000" d="M10,40 h15 v10 h-15 z M35,40 h10 v10 h-10 z M60,40 h20 v10 h-20 z" />
-                <path fill="#000" d="M40,55 h10 v10 h-10 z M60,55 h30 v10 h-30 z M25,60 h10 v10 h-10 z" />
-                <path fill="#000" d="M40,75 h15 v15 h-15 z M70,75 h20 v20 h-20 z M60,85 h5 v10 h-5 z" />
+                <path fill="#075f7e" d="M0,0 h30 v30 h-30 z M10,10 h10 v10 h-10 z" />
+                <path fill="#075f7e" d="M70,0 h30 v30 h-30 z M80,10 h10 v10 h-10 z" />
+                <path fill="#075f7e" d="M0,70 h30 v30 h-30 z M10,80 h10 v10 h-10 z" />
+                <path fill="#075f7e" d="M40,10 h10 v10 h-10 z M60,10 h5 v5 h-5 z M45,25 h15 v5 h-15 z" />
+                <path fill="#075f7e" d="M10,40 h15 v10 h-15 z M35,40 h10 v10 h-10 z M60,40 h20 v10 h-20 z" />
+                <path fill="#075f7e" d="M40,55 h10 v10 h-10 z M60,55 h30 v10 h-30 z M25,60 h10 v10 h-10 z" />
+                <path fill="#075f7e" d="M40,75 h15 v15 h-15 z M70,75 h20 v20 h-20 z M60,85 h5 v10 h-5 z" />
               </svg>
-              <p className="text-[9px] text-stone-600 font-bold uppercase tracking-widest mt-1">
-                KROMA ARTISAN COFFEE
+              <p className="text-[9px] text-[#075f7e] font-bold uppercase tracking-widest mt-1">
+                LOKALE COFFEE
               </p>
             </div>
 
-            <p className="text-[11px] text-stone-400">
+            <p className="text-[11px] text-slate-500">
               Scan dengan GoPay, OVO, BCA, Dana, atau mobile banking.
             </p>
 
-            <div className="my-3 py-2 px-3 rounded-xl bg-stone-900 border border-stone-800">
-              <span className="text-[10px] text-stone-400 block">Total Pembayaran</span>
-              <span className="text-lg font-bold text-amber-400">
+            <div className="my-3 py-2 px-3 rounded-xl bg-slate-50 border border-slate-200">
+              <span className="text-[10px] text-slate-500 block">Total Pembayaran</span>
+              <span className="text-lg font-bold text-[#007b9e]">
                 {formatRupiah(pendingOrderData.total)}
               </span>
             </div>
@@ -434,7 +434,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
             <button
               onClick={() => executeOrderCreation(pendingOrderData)}
               disabled={isSubmitting}
-              className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-xs shadow-lg transition-all flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2"
             >
               <CheckCircle2 className="w-4 h-4" />
               <span>Simulasi Bayar Sekarang</span>
@@ -442,6 +442,7 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
           </div>
         </div>
       )}
+
     </>
   );
 };

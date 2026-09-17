@@ -79,50 +79,50 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
       {/* Container - Bottom Sheet on mobile (rounded-t-3xl), Centered Modal on desktop */}
-      <div className="relative w-full sm:max-w-lg max-h-[92vh] sm:max-h-[88vh] bg-[#1a120c] border-t sm:border border-amber-900/40 rounded-t-[32px] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-slideUp">
+      <div className="relative w-full sm:max-w-lg max-h-[92vh] sm:max-h-[88vh] bg-white border-t sm:border border-slate-200 rounded-t-[32px] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-slideUp">
         {/* Mobile Drag Indicator Handle */}
-        <div className="sm:hidden pt-3 pb-1 flex justify-center bg-[#20140d]">
-          <div className="w-12 h-1.5 rounded-full bg-stone-700" />
+        <div className="sm:hidden pt-3 pb-1 flex justify-center bg-slate-50">
+          <div className="w-12 h-1.5 rounded-full bg-slate-300" />
         </div>
 
         {/* Header with image */}
-        <div className="relative h-36 sm:h-44 w-full overflow-hidden bg-stone-900 flex-shrink-0">
+        <div className="relative h-36 sm:h-44 w-full overflow-hidden bg-gradient-to-b from-[#075f7e] to-[#9ad6e8] flex-shrink-0 flex items-center justify-center">
           <img
             src={item.image}
             alt={item.name}
-            className="w-full h-full object-cover object-center"
+            className="h-full object-contain p-2 drop-shadow-lg"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1a120c] via-black/40 to-black/60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30" />
 
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 p-2 rounded-full bg-black/60 hover:bg-black/80 text-stone-300 hover:text-white transition-colors"
+            className="absolute top-3 right-3 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
           >
             <X className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
 
           {/* Item title in header */}
-          <div className="absolute bottom-3 left-4 right-4">
-            <span className="text-[10px] sm:text-xs uppercase font-bold tracking-wider text-amber-400">
+          <div className="absolute bottom-3 left-4 right-4 text-white">
+            <span className="text-[10px] sm:text-xs uppercase font-bold tracking-wider text-cyan-200">
               Kustomisasi Minuman
             </span>
-            <h2 className="text-lg sm:text-xl font-bold text-white line-clamp-1">{item.name}</h2>
-            <p className="text-xs sm:text-sm font-semibold text-amber-300">
+            <h2 className="text-lg sm:text-xl font-bold line-clamp-1">{item.name}</h2>
+            <p className="text-xs sm:text-sm font-semibold text-cyan-100">
               Mulai {formatRupiah(item.price)}
             </p>
           </div>
         </div>
 
-        {/* Customization Options (Touch friendly) */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5 text-stone-200">
+        {/* Customization Options */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-5 text-slate-700">
           {item.allowCustomization ? (
             <>
               {/* Sugar Level */}
               <div>
-                <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-amber-300 block mb-2">
+                <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#075f7e] block mb-2">
                   Tingkat Kemanisan (Sugar Level)
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -138,8 +138,8 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       onClick={() => setSugarLevel(s.id as SugarLevel)}
                       className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all active:scale-98 ${
                         sugarLevel === s.id
-                          ? 'bg-amber-600/30 border-amber-500 text-amber-200 shadow-sm'
-                          : 'bg-stone-900/70 border-stone-800 text-stone-400'
+                          ? 'bg-cyan-50 border-[#007b9e] text-[#007b9e] shadow-sm'
+                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
                       }`}
                     >
                       {s.label}
@@ -150,7 +150,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
               {/* Ice Level */}
               <div>
-                <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-amber-300 block mb-2">
+                <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#075f7e] block mb-2">
                   Pilihan Es & Suhu
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -166,8 +166,8 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       onClick={() => setIceLevel(ice.id as IceLevel)}
                       className={`py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all active:scale-98 ${
                         iceLevel === ice.id
-                          ? 'bg-amber-600/30 border-amber-500 text-amber-200 shadow-sm'
-                          : 'bg-stone-900/70 border-stone-800 text-stone-400'
+                          ? 'bg-cyan-50 border-[#007b9e] text-[#007b9e] shadow-sm'
+                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
                       }`}
                     >
                       {ice.label}
@@ -178,7 +178,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
               {/* Milk Option */}
               <div>
-                <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-amber-300 block mb-2">
+                <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#075f7e] block mb-2">
                   Pilihan Susu (Milk Base)
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -193,12 +193,12 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                       onClick={() => setMilkOption(m.id as MilkOption)}
                       className={`p-2.5 rounded-xl text-left border transition-all active:scale-98 ${
                         milkOption === m.id
-                          ? 'bg-amber-600/30 border-amber-500 text-amber-200 shadow-sm'
-                          : 'bg-stone-900/70 border-stone-800 text-stone-400'
+                          ? 'bg-cyan-50 border-[#007b9e] text-[#007b9e] shadow-sm'
+                          : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
                       }`}
                     >
                       <div className="text-xs font-semibold">{m.label}</div>
-                      <div className="text-[11px] text-amber-400 mt-0.5 font-bold">
+                      <div className="text-[11px] text-[#007b9e] mt-0.5 font-bold">
                         {m.extra > 0 ? `+${formatRupiah(m.extra)}` : 'Termasuk'}
                       </div>
                     </button>
@@ -208,7 +208,7 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
 
               {/* Add-ons */}
               <div>
-                <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-amber-300 block mb-2">
+                <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#075f7e] block mb-2">
                   Tambahan Ekstra (Add-ons)
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -221,21 +221,21 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
                         onClick={() => toggleAddOn(addon.id)}
                         className={`p-2.5 rounded-xl flex items-center justify-between border text-left transition-all active:scale-98 ${
                           isSelected
-                            ? 'bg-amber-600/30 border-amber-500 text-amber-200'
-                            : 'bg-stone-900/70 border-stone-800 text-stone-400'
+                            ? 'bg-cyan-50 border-[#007b9e] text-[#007b9e]'
+                            : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
                         }`}
                       >
                         <div>
                           <div className="text-xs font-semibold">{addon.name}</div>
-                          <div className="text-[11px] text-amber-400 font-bold">
+                          <div className="text-[11px] text-[#007b9e] font-bold">
                             +{formatRupiah(addon.price)}
                           </div>
                         </div>
                         <div
                           className={`w-5 h-5 rounded-md flex items-center justify-center border ${
                             isSelected
-                              ? 'bg-amber-500 border-amber-400 text-stone-950'
-                              : 'border-stone-700'
+                              ? 'bg-[#007b9e] border-[#007b9e] text-white'
+                              : 'border-slate-300'
                           }`}
                         >
                           {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
@@ -247,14 +247,14 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
               </div>
             </>
           ) : (
-            <div className="p-3.5 rounded-xl bg-stone-900/60 border border-stone-800 text-xs text-stone-300">
+            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600">
               Disajikan dengan resep standar barista terbaik untuk cita rasa otentik.
             </div>
           )}
 
           {/* Notes for Barista */}
           <div>
-            <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-amber-300 block mb-1.5">
+            <label className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#075f7e] block mb-1.5">
               Catatan untuk Barista (Opsional)
             </label>
             <input
@@ -263,26 +263,26 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Contoh: Sedotan kertas, pisah saus..."
               maxLength={120}
-              className="w-full bg-stone-900/90 border border-stone-800 rounded-xl px-3.5 py-2 text-xs text-stone-200 placeholder-stone-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#007b9e]"
             />
           </div>
         </div>
 
         {/* Footer: Quantity & Confirm Button */}
-        <div className="p-3.5 sm:p-4 bg-[#140e08] border-t border-stone-800 flex items-center justify-between gap-3">
-          <div className="flex items-center bg-stone-900 border border-stone-800 rounded-xl p-1 flex-shrink-0">
+        <div className="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-3">
+          <div className="flex items-center bg-white border border-slate-200 rounded-full p-1 flex-shrink-0">
             <button
               type="button"
               onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-stone-400 hover:text-white"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900"
             >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="w-8 text-center text-sm font-bold text-white">{quantity}</span>
+            <span className="w-8 text-center text-sm font-bold text-slate-800">{quantity}</span>
             <button
               type="button"
               onClick={() => setQuantity(quantity + 1)}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-stone-400 hover:text-white"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:text-slate-900"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -291,9 +291,9 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
           <button
             type="button"
             onClick={handleConfirm}
-            className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-500 hover:to-amber-600 text-white font-bold text-xs sm:text-sm shadow-xl shadow-amber-950/60 flex items-center justify-between active:scale-98 transition-all"
+            className="flex-1 py-3 px-5 rounded-full bg-[#007b9e] hover:bg-[#006a88] text-white font-bold text-xs sm:text-sm shadow-md shadow-cyan-900/20 flex items-center justify-between active:scale-98 transition-all"
           >
-            <span>Tambah</span>
+            <span>Tambah ke Pesanan</span>
             <span>{formatRupiah(totalPrice)}</span>
           </button>
         </div>
@@ -301,3 +301,4 @@ export const CustomizationModal: React.FC<CustomizationModalProps> = ({
     </div>
   );
 };
+
